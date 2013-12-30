@@ -4,10 +4,8 @@
 enum class Opcode
 {
     LOAD,
-    STORE,
     INCREMENT,
     DECREMENT,
-    JUMP,
     SYSCALL
 };
 
