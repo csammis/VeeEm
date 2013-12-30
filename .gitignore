@@ -1,0 +1,6 @@
+*.swp
+*.d
+*.lst
+*.o
+*.elf
+.DS_Store*
