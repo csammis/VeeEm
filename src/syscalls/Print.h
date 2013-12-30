@@ -2,6 +2,7 @@
 #define __SYSCALLS_PRINT_H__
 
 #include "SystemCall.h"
+#include "Context.h"
 
 #include <iostream>
 
@@ -14,7 +15,15 @@ public:
     void Execute(Context& context)
     {
         using namespace std;
-        cout << "In Print syscall" << endl;
+        cout << "~~ printing current context ~~" << endl;
+        for (int i = 0; i < 32; i++)
+        {
+            cout << "r" << i << ": " << context.Registers[i] << " ";
+            if (i % 3 == 0)
+            {
+                cout << endl;
+            }
+        }
     }
 };
 
