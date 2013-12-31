@@ -1,11 +1,11 @@
 #include "Instruction.h"
 
 #include <string.h>
+#include <stdlib.h>
 
 Instruction::Instruction(Opcode opcode)
     : m_Opcode(opcode)
 {
-    memset(&Parameters, 0, 3 * sizeof(unsigned int));
 }
 
 Opcode Instruction::Opcode() const
@@ -25,7 +25,7 @@ bool Instruction::Execute(Context& context)
         break;
     case Opcode.SYSCALL:
         {
-            unsigned int arg = Parameters[0];
+            int arg = atoi(m_Parameters.front().c_str());
             if (arg < MIN_SYSCALL || arg > MAX_SYSCALL)
             {
                 context.Flags = RegisterFlags::FLAGS_ERR_SYSCALL_OUT_OF_RANGE;
