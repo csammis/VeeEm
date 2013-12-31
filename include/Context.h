@@ -1,8 +1,6 @@
 #ifndef __CONTEXT_H__
 #define __CONTEXT_H__
 
-class Instruction;
-
 class Context
 {
 public:
@@ -10,7 +8,8 @@ public:
     ~Context();
 
     unsigned int Registers[32];
-    Instruction* InstrPtr;
+    unsigned int InstrPtr;
+    unsigned int Flags;
 };
 
 #endif // __CONTEXT_H__

@@ -3,6 +3,8 @@
 
 #include "Opcode.h"
 
+class Context;
+
 class Instruction
 {
 public:
@@ -12,6 +14,8 @@ public:
     Opcode Opcode() const;
 
     unsigned int Parameters[3];
+
+    bool Execute(Context& context);
 
 private:
     Opcode m_Opcode;
