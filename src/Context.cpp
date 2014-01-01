@@ -27,7 +27,7 @@ unsigned int* Context::ResolveLocationReference(const std::string& arg)
 
     if (arg[0] == 'r')
     {
-        int registerIndex = atoi(arg.substr(1).c_str());
+        int registerIndex = strtol(arg.substr(1).c_str(), nullptr, 0);
         if (registerIndex < 0 || registerIndex > 31)
         {
             CoreLogger::Write(LogLevel::LOG_ERROR, "ResolveLocationReference asked for out-of-range register value (" + arg + ")");

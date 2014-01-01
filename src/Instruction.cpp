@@ -4,10 +4,7 @@
 #include "Context.h"
 #include "RegisterFlags.h"
 
-#include <string.h>
 #include <stdlib.h>
-
-#include <iostream>
 
 Instruction::Instruction(enum Opcode opcode)
     : m_Opcode(opcode)
@@ -52,7 +49,7 @@ bool Instruction::Execute(Context& context)
         break;
     case Opcode::SYSCALL:
         {
-            int arg = atoi(m_Parameters.front().c_str());
+            int arg = strtol(m_Parameters.front().c_str(), nullptr, 0);
             if (arg < MIN_SYSCALL || arg > MAX_SYSCALL)
             {
                 context.Flags = RegisterFlags::FLAGS_ERR_SYSCALL_OUT_OF_RANGE;
