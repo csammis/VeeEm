@@ -1,10 +1,18 @@
 #include "Instruction.h"
+#include "SystemCall.h"
+#include "Syscall.h"
+#include "Context.h"
+#include "RegisterFlags.h"
 
 #include <string.h>
 #include <stdlib.h>
 
-Instruction::Instruction(Opcode opcode)
+Instruction::Instruction(enum Opcode opcode)
     : m_Opcode(opcode)
+{
+}
+
+Instruction::~Instruction()
 {
 }
 
@@ -13,22 +21,27 @@ Opcode Instruction::Opcode() const
     return m_Opcode;
 }
 
+void Instruction::AddParameter(const std::string& parameter)
+{
+    m_Parameters.push_back(parameter);
+}
+
 bool Instruction::Execute(Context& context)
 {
-    switch (OpCode())
+    switch (Opcode())
     {
-    case Opcode.LOAD:
+    case Opcode::LOAD:
         break;
-    case Opcode.INCREMENT:
+    case Opcode::INCREMENT:
         break;
-    case Opcode.DECREMENT:
+    case Opcode::DECREMENT:
         break;
-    case Opcode.SYSCALL:
+    case Opcode::SYSCALL:
         {
             int arg = atoi(m_Parameters.front().c_str());
             if (arg < MIN_SYSCALL || arg > MAX_SYSCALL)
             {
-                context.Flags = RegisterFlags::FLAGS_ERR_SYSCALL_OUT_OF_RANGE;
+                context.Flags = static_cast<unsigned int>(RegisterFlags::FLAGS_ERR_SYSCALL_OUT_OF_RANGE);
                 return false;
             }
             std::unique_ptr<SystemCall> call = SystemCall::Create(static_cast<Syscall>(arg));

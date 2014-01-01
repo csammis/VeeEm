@@ -9,8 +9,8 @@
 class Print : public SystemCall 
 {
 public:
-    Print();
-    ~Print();
+    Print() { }
+    ~Print() { }
 
     void Execute(Context& context)
     {

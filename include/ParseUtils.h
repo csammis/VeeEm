@@ -19,10 +19,30 @@ void InitOpcodeParseMap()
         return;
     }
 
-    opcodeParses.insert("load", make_pair(Opcode::LOAD, 2));
-    opcodeParses.insert("incr", make_pair(Opcode::INCREMENT, 1));
-    opcodeParses.insert("decr", make_pair(Opcode::DECREMENT, 1));
-    opcodeParses.insert("call", make_pair(Opcode::SYSCALL, 1));
+    opcodeParses["load"] = std::make_pair(Opcode::LOAD, 2);
+    opcodeParses["incr"] = std::make_pair(Opcode::INCREMENT, 1);
+    opcodeParses["decr"] = std::make_pair(Opcode::DECREMENT, 1);
+    opcodeParses["syscall"] = std::make_pair(Opcode::SYSCALL, 1);
+}
+
+std::string Trim(const std::string& input)
+{
+    std::string retval(input);
+    if (!retval.empty())
+    {
+        int front = 0;
+        int back = retval.size() - 1;
+        while (retval[front] == ' ')
+        {
+            front++;
+        }
+        while (retval[back] == ' ')
+        {
+            back--;
+        }
+        retval = retval.substr(front, back - front + 1);
+    }
+    return retval;
 }
 
 } } }

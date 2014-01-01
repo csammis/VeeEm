@@ -11,10 +11,12 @@ class Context;
 class Instruction
 {
 public:
-    Instruction(Opcode opcode);
+    Instruction(enum Opcode opcode);
     ~Instruction();
 
     Opcode Opcode() const;
+
+    void AddParameter(const std::string& parameter);
 
     bool Execute(Context& context);
 
