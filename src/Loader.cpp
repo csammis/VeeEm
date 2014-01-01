@@ -52,6 +52,12 @@ int RunProgram(std::ifstream& infile)
     message << "Loaded " << instructions.size() << " instructions";
     CoreLogger::Write(LogLevel::LOG_DEBUG, message.str());
 
+    Context context;
+    for (Instruction& inst : instructions)
+    {
+        inst.Execute(context);
+    }
+
     CoreLogger::Teardown();
     return 0;
 }
