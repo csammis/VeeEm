@@ -1,10 +1,12 @@
 #ifndef __REGISTERFLAGS_H__
 #define __REGISTERFLAGS_H__
 
-enum class RegisterFlags : unsigned int
+enum class RegisterFlags
 {
-    FLAGS_NONE                     = 0x00000000,
-    FLAGS_ERR_SYSCALL_OUT_OF_RANGE = 0x00000001
+    FLAGS_NONE,
+    FLAGS_ERR_SYSCALL_OUT_OF_RANGE,
+    FLAGS_ERR_LOCATION_FORMAT_UNSUPPORTED,
+    FLAGS_ERR_LOCATION_REGISTER_OUT_OF_RANGE,
 };
 
 #endif //__REGISTERFLAGS_H__

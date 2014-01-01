@@ -7,6 +7,8 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include <iostream>
+
 Instruction::Instruction(enum Opcode opcode)
     : m_Opcode(opcode)
 {
@@ -28,23 +30,35 @@ void Instruction::AddParameter(const std::string& parameter)
 
 bool Instruction::Execute(Context& context)
 {
+    using namespace std;
+
     switch (Opcode())
     {
     case Opcode::LOAD:
         break;
     case Opcode::INCREMENT:
+        {
+            string arg = m_Parameters.front();
+            unsigned int* pLoc = context.ResolveLocationReference(arg);
+            *pLoc = (*pLoc) + 1;
+        }
         break;
     case Opcode::DECREMENT:
+        {
+            string arg = m_Parameters.front();
+            unsigned int* pLoc = context.ResolveLocationReference(arg);
+            *pLoc = (*pLoc) - 1;
+        }
         break;
     case Opcode::SYSCALL:
         {
             int arg = atoi(m_Parameters.front().c_str());
             if (arg < MIN_SYSCALL || arg > MAX_SYSCALL)
             {
-                context.Flags = static_cast<unsigned int>(RegisterFlags::FLAGS_ERR_SYSCALL_OUT_OF_RANGE);
+                context.Flags = RegisterFlags::FLAGS_ERR_SYSCALL_OUT_OF_RANGE;
                 return false;
             }
-            std::unique_ptr<SystemCall> call = SystemCall::Create(static_cast<Syscall>(arg));
+            unique_ptr<SystemCall> call = SystemCall::Create(static_cast<Syscall>(arg));
             call->Execute(context);
         }
         break;
