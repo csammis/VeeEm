@@ -5,16 +5,17 @@
 #include <string>
 
 #include "Instruction.h"
+#include "Context.h"
 #include "ParseUtils.h"
 #include "CoreLogger.h"
 
-using namespace std;
-
-bool LoadInstructions(ifstream& infile, vector<Instruction>& instructions);
-int RunProgram(ifstream& infile);
+bool LoadInstructions(std::ifstream& infile, std::vector<Instruction>& instructions);
+int RunProgram(std::ifstream& infile);
 
 int main(int argc, char** argv)
 {
+    using namespace std;
+
     if (argc != 2)
     {
         cout << "Usage: VeeEm <filename>" << endl;
@@ -33,8 +34,9 @@ int main(int argc, char** argv)
     return RunProgram(infile);
 }
 
-int RunProgram(ifstream& infile)
+int RunProgram(std::ifstream& infile)
 {
+    using namespace std;
     using namespace VeeEm::Core;
     using namespace VeeEm::Core::Utils;
 
@@ -54,8 +56,9 @@ int RunProgram(ifstream& infile)
     return 0;
 }
 
-bool LoadInstructions(ifstream& infile, vector<Instruction>& instructions)
+bool LoadInstructions(std::ifstream& infile, std::vector<Instruction>& instructions)
 {
+    using namespace std;
     using namespace VeeEm::Core;
     using namespace VeeEm::Core::Utils;
 
