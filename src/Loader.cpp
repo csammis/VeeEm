@@ -1,14 +1,17 @@
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <vector>
 #include <string>
 
 #include "Instruction.h"
 #include "ParseUtils.h"
+#include "CoreLogger.h"
 
 using namespace std;
 
-bool LoadInstructions(const string& filename, vector<Instruction>& instructions);
+bool LoadInstructions(ifstream& infile, vector<Instruction>& instructions);
+int RunProgram(ifstream& infile);
 
 int main(int argc, char** argv)
 {
@@ -19,27 +22,46 @@ int main(int argc, char** argv)
     }
 
     string filename(argv[1]);
-    vector<Instruction> instructions;
-    if (!LoadInstructions(filename, instructions))
+    ifstream infile;
+    infile.open(filename.c_str());
+    if (!infile.good())
     {
         cout << "Unable to load " << filename << endl;
         return 1;
     }
 
-    cout << "DEBUG: Loaded " << instructions.size() << " instructions" << endl;
+    return RunProgram(infile);
+}
 
+int RunProgram(ifstream& infile)
+{
+    using namespace VeeEm::Core;
+    using namespace VeeEm::Core::Utils;
+
+    CoreLogger::Initialize(LogLevel::LOG_DEBUG);
+
+    vector<Instruction> instructions;
+    if (!LoadInstructions(infile, instructions))
+    {
+        return 1;
+    }
+
+    stringstream message;
+    message << "Loaded " << instructions.size() << " instructions";
+    CoreLogger::Write(LogLevel::LOG_DEBUG, message.str());
+
+    CoreLogger::Teardown();
     return 0;
 }
 
-bool LoadInstructions(const string& filename, vector<Instruction>& instructions)
+bool LoadInstructions(ifstream& infile, vector<Instruction>& instructions)
 {
+    using namespace VeeEm::Core;
     using namespace VeeEm::Core::Utils;
 
     InitOpcodeParseMap();
     int linenumber = 1;
 
-    ifstream infile;
-    infile.open(filename.c_str());
     while (infile.good())
     {
         string raw_instruction;
@@ -52,17 +74,17 @@ bool LoadInstructions(const string& filename, vector<Instruction>& instructions)
             continue;
         }
 
-        cout << "DEBUG: Looking up parse information for instruction {" << name << "}" << endl;
         auto lookup = opcodeParses.find(name);
         if (lookup == opcodeParses.end())
         {
-            cout << "** Unknown instruction found during parse: " << name << " (line " << linenumber << ")" << endl;
+            stringstream message;
+            message << "Unknown instruction found during parse: " << name << " (line " << linenumber << ")";
+            CoreLogger::Write(LogLevel::LOG_ERROR, message.str());
             return false;
         }
 
         Instruction inst(lookup->second.first);
         string parameters = raw_instruction.substr(name.size() + 1);
-        cout << "DEBUG: Parsing {" << parameters << "} as parameters for instruction" << endl;
         for (int i = 0; i < lookup->second.second; i++)
         {
             string::size_type splitAt = parameters.find_first_of(',');
@@ -72,14 +94,13 @@ bool LoadInstructions(const string& filename, vector<Instruction>& instructions)
             }
             string parameter = Trim(parameters.substr(0, splitAt));
             inst.AddParameter(parameter);
-            cout << "DEBUG: Added parameter {" << parameter << "} to instruction" << endl;
-
             parameters = parameters.substr(splitAt);
         }
         instructions.push_back(inst);
 
         linenumber++;
     }
+    infile.close();
 
     return true;
 }
