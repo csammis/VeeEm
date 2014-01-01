@@ -19,7 +19,7 @@ public:
         for (int i = 0; i < 32; i++)
         {
             cout << "r" << i << ": " << context.Registers[i] << " ";
-            if (i % 3 == 0)
+            if ((i + 1) % 8 == 0)
             {
                 cout << endl;
             }
