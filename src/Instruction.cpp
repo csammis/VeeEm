@@ -67,6 +67,20 @@ bool Instruction::Execute(Context& context)
             }
         }
         break;
+    case Opcode::COMPARE:
+        {
+            unsigned int a = 0, b = 0;
+            if (!context.ResolveValue(m_Parameters[0], a) || !context.ResolveValue(m_Parameters[1], b))
+            {
+                return false;
+            }
+
+            context.CompareFlags = 0;
+            if (a == b) context.CompareFlags |= 0x01;
+            if (a < b) context.CompareFlags |= 0x02;
+            if (a > b) context.CompareFlags |= 0x04;
+        }
+        break;
     case Opcode::SYSCALL:
         {
             int arg = strtol(m_Parameters[0].c_str(), nullptr, 0);
