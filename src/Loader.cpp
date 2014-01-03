@@ -67,14 +67,19 @@ bool LoadInstructions(std::ifstream& infile, std::vector<Instruction>& instructi
     using namespace VeeEm::Core::Utils;
 
     InitOpcodeParseMap();
-    int linenumber = 1;
 
-    while (infile.good())
+    bool successfulParse = true; // Optimism!
+    for (int linenumber = 1; infile.good(); linenumber++)
     {
         string raw_instruction;
         getline(infile, raw_instruction);
 
-        string name = raw_instruction.substr(0, raw_instruction.find_first_of(' '));
+        string::size_type nameEnd = raw_instruction.find_first_of(' ');
+        if (nameEnd == string::npos)
+        {
+            nameEnd = raw_instruction.size();
+        }
+        string name = raw_instruction.substr(0, nameEnd);
 
         if (raw_instruction.empty() || name.empty())
         {
@@ -85,32 +90,51 @@ bool LoadInstructions(std::ifstream& infile, std::vector<Instruction>& instructi
         if (lookup == opcodeParses.end())
         {
             Log::Instance(LogLevel::ERROR) << "Unknown instuction found during parse: " << name << " (line " << linenumber << ")" << End();
-            return false;
+            successfulParse = false;
+            continue;
+        }
+
+        list<string> parameterList;
+        if (name.size() + 1 < raw_instruction.size())
+        {
+            string parameters = raw_instruction.substr(name.size() + 1);
+            while (!parameters.empty())
+            {
+                string parameter = "";
+                string::size_type splitAt = parameters.find_first_of(',');
+                if (splitAt == string::npos)
+                {
+                    splitAt = parameters.size();
+                    parameter = Trim(parameters.substr(0, parameters.size()));
+                    parameters.clear();
+                }
+                else
+                {
+                    parameter = Trim(parameters.substr(0, splitAt));
+                    parameters = parameters.substr(splitAt + 1);
+                }
+
+                Log::Instance(LogLevel::DEBUG) << "Got parameter [" << parameter << "] from front of list [" << parameters << "]" << End();
+                parameterList.push_back(parameter);
+            }
+        }
+
+        if (parameterList.size() != lookup->second.second)
+        {
+            Log::Instance(LogLevel::ERROR) << "Unexpected number of parameters at line " << linenumber << " for instruction '" << name
+                << "' (should be " << lookup->second.second << " but read " << parameterList.size() << ")" << End();
+            successfulParse = false;
+            continue;
         }
 
         Instruction inst(lookup->second.first);
-        string parameters = raw_instruction.substr(name.size() + 1);
-        for (int i = 0; i < lookup->second.second; i++)
+        for (const string& s : parameterList)
         {
-            string::size_type splitAt = parameters.find_first_of(',');
-            if (splitAt == string::npos)
-            {
-                splitAt = parameters.size();
-            }
-            string parameter = Trim(parameters.substr(0, splitAt));
-            Log::Instance(LogLevel::DEBUG) << "Got parameter [" << parameter << "] from front of list [" << parameters << "]" << End();
-            inst.AddParameter(parameter);
-
-            if (i + 1 < lookup->second.second)
-            {
-                parameters = parameters.substr(splitAt + 1);
-            }
+            inst.AddParameter(s);
         }
         instructions.push_back(inst);
-
-        linenumber++;
     }
     infile.close();
 
-    return true;
+    return successfulParse;
 }

@@ -1,5 +1,5 @@
-load r0, $2000
-incr r0
+load r0, $0x10
+incr r12
 incr r0
 incr r0
 decr r0
