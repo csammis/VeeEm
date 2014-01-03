@@ -98,8 +98,13 @@ bool LoadInstructions(std::ifstream& infile, std::vector<Instruction>& instructi
                 splitAt = parameters.size();
             }
             string parameter = Trim(parameters.substr(0, splitAt));
+            Log::Instance(LogLevel::DEBUG) << "Got parameter [" << parameter << "] from front of list [" << parameters << "]" << End();
             inst.AddParameter(parameter);
-            parameters = parameters.substr(splitAt);
+
+            if (i + 1 < lookup->second.second)
+            {
+                parameters = parameters.substr(splitAt + 1);
+            }
         }
         instructions.push_back(inst);
 
