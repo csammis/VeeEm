@@ -6,8 +6,8 @@
 
 #include <stdlib.h>
 
-Instruction::Instruction(enum Opcode opcode)
-    : m_Opcode(opcode)
+Instruction::Instruction(enum Opcode opcode, int parameterCount)
+    : m_Opcode(opcode), m_Parameters(parameterCount)
 {
 }
 
@@ -20,9 +20,9 @@ Opcode Instruction::Opcode() const
     return m_Opcode;
 }
 
-void Instruction::AddParameter(const std::string& parameter)
+void Instruction::SetParameter(int index, const std::string& parameter)
 {
-    m_Parameters.push_back(parameter);
+    m_Parameters[index] = parameter;
 }
 
 bool Instruction::Execute(Context& context)
@@ -33,9 +33,9 @@ bool Instruction::Execute(Context& context)
     {
     case Opcode::LOAD:
         {
-            unsigned int* pReg = context.ResolveLocationReference(m_Parameters.front());
+            unsigned int* pReg = context.ResolveLocationReference(m_Parameters[0]);
             unsigned int value = 0;
-            if (!context.ResolveValue(m_Parameters.back(), value))
+            if (!context.ResolveValue(m_Parameters[1], value))
             {
                 return false;
             }
@@ -44,21 +44,30 @@ bool Instruction::Execute(Context& context)
         break;
     case Opcode::INCREMENT:
         {
-            string arg = m_Parameters.front();
-            unsigned int* pLoc = context.ResolveLocationReference(arg);
+            unsigned int* pLoc = context.ResolveLocationReference(m_Parameters[0]);
             *pLoc = (*pLoc) + 1;
         }
         break;
     case Opcode::DECREMENT:
         {
-            string arg = m_Parameters.front();
-            unsigned int* pLoc = context.ResolveLocationReference(arg);
+            unsigned int* pLoc = context.ResolveLocationReference(m_Parameters[0]);
             *pLoc = (*pLoc) - 1;
+        }
+        break;
+    case Opcode::ADD:
+        {
+            unsigned int* pReg = context.ResolveLocationReference(m_Parameters[0]);
+            unsigned int a = 0, b = 0;
+            if (!context.ResolveValue(m_Parameters[1], a) || !context.ResolveValue(m_Parameters[2], b))
+            {
+                return false;
+            }
+            *pReg = a + b;
         }
         break;
     case Opcode::SYSCALL:
         {
-            int arg = strtol(m_Parameters.front().c_str(), nullptr, 0);
+            int arg = strtol(m_Parameters[0].c_str(), nullptr, 0);
             if (arg < MIN_SYSCALL || arg > MAX_SYSCALL)
             {
                 context.Error = ContextError::SYSCALL_OUT_OF_RANGE;

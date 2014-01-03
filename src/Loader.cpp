@@ -2,6 +2,7 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
+#include <list>
 #include <string>
 
 #include "Instruction.h"
@@ -127,10 +128,11 @@ bool LoadInstructions(std::ifstream& infile, std::vector<Instruction>& instructi
             continue;
         }
 
-        Instruction inst(lookup->second.first);
+        Instruction inst(lookup->second.first, lookup->second.second);
+        int index = 0;
         for (const string& s : parameterList)
         {
-            inst.AddParameter(s);
+            inst.SetParameter(index++, s);
         }
         instructions.push_back(inst);
     }

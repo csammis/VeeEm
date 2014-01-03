@@ -6,6 +6,7 @@ enum class Opcode
     LOAD,
     INCREMENT,
     DECREMENT,
+    ADD,
     SYSCALL
 };
 
