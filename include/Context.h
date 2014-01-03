@@ -16,6 +16,7 @@ public:
     ContextError Error;
 
     unsigned int* ResolveLocationReference(const std::string& arg);
+    bool ResolveValue(const std::string& arg, unsigned int& value);
 };
 
 #endif // __CONTEXT_H__

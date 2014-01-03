@@ -41,3 +41,25 @@ unsigned int* Context::ResolveLocationReference(const std::string& arg)
     return nullptr;
 }
 
+bool Context::ResolveValue(const std::string& arg, unsigned int& value)
+{
+    using namespace VeeEm::Core::Logger;
+
+    if (arg.empty())
+    {
+        Log::Instance(LogLevel::WARNING) << "ResolveValue called with empty argument." << End();
+        return false;
+    }
+
+    if (arg[0] == '$')
+    {
+        value = static_cast<unsigned int>(strtol(arg.substr(1).c_str(), nullptr, 0));
+        return true;
+    }
+
+    Log::Instance(LogLevel::ERROR) << "Non-constant values are not supported." << End();
+    Error = ContextError::LOCATION_FORMAT_UNSUPPORTED;
+
+    return false;
+}
+
