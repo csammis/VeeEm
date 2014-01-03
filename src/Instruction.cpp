@@ -32,6 +32,15 @@ bool Instruction::Execute(Context& context)
     switch (Opcode())
     {
     case Opcode::LOAD:
+        {
+            unsigned int* pReg = context.ResolveLocationReference(m_Parameters.front());
+            unsigned int value = 0;
+            if (!context.ResolveValue(m_Parameters.back(), value))
+            {
+                return false;
+            }
+            *pReg = value;
+        }
         break;
     case Opcode::INCREMENT:
         {

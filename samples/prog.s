@@ -1,3 +1,4 @@
+load r0, $2000
 incr r0
 incr r0
 incr r0
