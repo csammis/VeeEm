@@ -27,7 +27,6 @@ public:
     bool IsStart() const { return m_IsStart; }
     void IsStart(bool val) { m_IsStart = val; }
 
-    friend class Level;
     friend class End;
 
 private:
@@ -39,15 +38,6 @@ private:
 
     static Log* s_Log;
 };
-
-class End
-{
-public:
-    End() { }
-
-    Log& operator()(Log& logger) const;
-};
-
 
 template<typename T> Log& operator<<(Log& logger, const T& val)
 {
@@ -77,6 +67,16 @@ template<typename T> Log& operator<<(Log& logger, const T& val)
 
     return logger;
 }
+
+// Output manipulator for writing a log line and resetting to print a new header
+//
+class End
+{
+public:
+    End() { }
+
+    Log& operator()(Log& logger) const;
+};
 
 inline Log& operator<<(Log& logger, End manip)
 {
