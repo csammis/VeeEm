@@ -27,11 +27,9 @@ unsigned int* Context::ResolveLocationReference(const std::string& arg)
 
     if (arg[0] == 'r')
     {
-        int registerIndex = strtol(arg.substr(1).c_str(), nullptr, 0);
-        if (registerIndex < 0 || registerIndex > 31)
+        int registerIndex = -1;
+        if (!ValidateRegister(arg, registerIndex))
         {
-            Log::Instance(LogLevel::ERROR) << "ResolveLocationReference asked for out-of-range register value (" << arg << ")" << End();
-            Error = ContextError::LOCATION_REGISTER_OUT_OF_RANGE;
             return nullptr;
         }
         return &(Registers[registerIndex]);
@@ -56,10 +54,34 @@ bool Context::ResolveValue(const std::string& arg, unsigned int& value)
         value = static_cast<unsigned int>(strtol(arg.substr(1).c_str(), nullptr, 0));
         return true;
     }
+    else if (arg[0] == 'r')
+    {
+        int registerIndex = -1;
+        if (!ValidateRegister(arg, registerIndex))
+        {
+            return false;
+        }
+        value = Registers[registerIndex];
+        return true;
+    }
 
     Log::Instance(LogLevel::ERROR) << "Non-constant values are not supported." << End();
     Error = ContextError::LOCATION_FORMAT_UNSUPPORTED;
 
     return false;
+}
+
+bool Context::ValidateRegister(const std::string& arg, int& registerIndex)
+{
+    using namespace VeeEm::Core::Logger;
+
+    registerIndex = strtol(arg.substr(1).c_str(), nullptr, 0);
+    if (registerIndex < 0 || registerIndex > 31)
+    {
+        Log::Instance(LogLevel::ERROR) << "ResolveLocationReference asked for out-of-range register value (" << arg << ")" << End();
+        Error = ContextError::LOCATION_REGISTER_OUT_OF_RANGE;
+        return false;
+    }
+    return true;
 }
 

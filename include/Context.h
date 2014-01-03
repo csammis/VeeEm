@@ -17,6 +17,9 @@ public:
 
     unsigned int* ResolveLocationReference(const std::string& arg);
     bool ResolveValue(const std::string& arg, unsigned int& value);
+
+private:
+    bool ValidateRegister(const std::string& arg, int& registerIndex);
 };
 
 #endif // __CONTEXT_H__
