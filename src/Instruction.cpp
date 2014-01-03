@@ -55,6 +55,7 @@ bool Instruction::Execute(Context& context)
         }
         break;
     case Opcode::ADD:
+    case Opcode::SUBTRACT:
         {
             unsigned int* pReg = context.ResolveLocationReference(m_Parameters[0]);
             unsigned int a = 0, b = 0;
@@ -62,7 +63,15 @@ bool Instruction::Execute(Context& context)
             {
                 return false;
             }
-            *pReg = a + b;
+
+            if (Opcode() == Opcode::ADD)
+            {
+                *pReg = a + b;
+            }
+            else
+            {
+                *pReg = a - b;
+            }
         }
         break;
     case Opcode::SYSCALL:

@@ -7,6 +7,7 @@ enum class Opcode
     INCREMENT,
     DECREMENT,
     ADD,
+    SUBTRACT,
     SYSCALL
 };
 

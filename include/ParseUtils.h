@@ -23,6 +23,7 @@ void InitOpcodeParseMap()
     opcodeParses["incr"] = std::make_pair(Opcode::INCREMENT, 1);
     opcodeParses["decr"] = std::make_pair(Opcode::DECREMENT, 1);
     opcodeParses["add"] = std::make_pair(Opcode::ADD, 3);
+    opcodeParses["sub"] = std::make_pair(Opcode::SUBTRACT, 3);
     opcodeParses["syscall"] = std::make_pair(Opcode::SYSCALL, 1);
 }
 
