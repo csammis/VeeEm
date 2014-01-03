@@ -3,7 +3,7 @@
 
 enum class Syscall
 {
-    PRINT
+    DUMPCONTEXT
 };
 
 #define MIN_SYSCALL 0

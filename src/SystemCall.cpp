@@ -1,7 +1,7 @@
 #include "SystemCall.h"
 
 #include "Syscall.h"
-#include "syscalls/Print.h"
+#include "syscalls/DumpContext.h"
 
 SystemCall::SystemCall()
 {
@@ -15,8 +15,8 @@ std::unique_ptr<SystemCall> SystemCall::Create(Syscall type)
 {
     switch (type)
     {
-    case Syscall::PRINT:
-        return std::unique_ptr<SystemCall>(new Print);
+    case Syscall::DUMPCONTEXT:
+        return std::unique_ptr<SystemCall>(new DumpContext);
         break;
     }
 }

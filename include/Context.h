@@ -12,8 +12,8 @@ public:
 
     unsigned int Registers[32];
     unsigned int InstrPtr;
-    //RegisterFlags Flags;
     ContextError Error;
+    unsigned char CompareFlags;
 
     unsigned int* ResolveLocationReference(const std::string& arg);
     bool ResolveValue(const std::string& arg, unsigned int& value);

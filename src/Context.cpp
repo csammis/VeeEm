@@ -6,7 +6,7 @@
 #include "CoreLogger.h"
 
 Context::Context()
-    : InstrPtr(0), Error(ContextError::NONE)
+    : InstrPtr(0), Error(ContextError::NONE), CompareFlags(0)
 {
     memset(&Registers, 0, 32 * sizeof(unsigned int));
 }
