@@ -1,12 +1,13 @@
-#ifndef __REGISTERFLAGS_H__
-#define __REGISTERFLAGS_H__
+#ifndef __REGISTERH__
+#define __REGISTERH__
 
-enum class RegisterFlags
+// Describes an execution error encountered in a Context
+enum class ContextError 
 {
-    FLAGS_NONE,
-    FLAGS_ERR_SYSCALL_OUT_OF_RANGE,
-    FLAGS_ERR_LOCATION_FORMAT_UNSUPPORTED,
-    FLAGS_ERR_LOCATION_REGISTER_OUT_OF_RANGE,
+    NONE,
+    SYSCALL_OUT_OF_RANGE,
+    LOCATION_FORMAT_UNSUPPORTED,
+    LOCATION_REGISTER_OUT_OF_RANGE,
 };
 
-#endif //__REGISTERFLAGS_H__
+#endif //__REGISTERH__

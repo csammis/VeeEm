@@ -52,7 +52,7 @@ bool Instruction::Execute(Context& context)
             int arg = strtol(m_Parameters.front().c_str(), nullptr, 0);
             if (arg < MIN_SYSCALL || arg > MAX_SYSCALL)
             {
-                context.Flags = RegisterFlags::FLAGS_ERR_SYSCALL_OUT_OF_RANGE;
+                context.Error = ContextError::SYSCALL_OUT_OF_RANGE;
                 return false;
             }
             unique_ptr<SystemCall> call = SystemCall::Create(static_cast<Syscall>(arg));

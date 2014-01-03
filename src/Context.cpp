@@ -6,7 +6,7 @@
 #include "CoreLogger.h"
 
 Context::Context()
-    : InstrPtr(0), Flags(RegisterFlags::FLAGS_NONE)
+    : InstrPtr(0), Error(ContextError::NONE)
 {
     memset(&Registers, 0, 32 * sizeof(unsigned int));
 }
@@ -31,13 +31,13 @@ unsigned int* Context::ResolveLocationReference(const std::string& arg)
         if (registerIndex < 0 || registerIndex > 31)
         {
             CoreLogger::Write(LogLevel::LOG_ERROR, "ResolveLocationReference asked for out-of-range register value (" + arg + ")");
-            Flags = RegisterFlags::FLAGS_ERR_LOCATION_REGISTER_OUT_OF_RANGE;
+            Error = ContextError::LOCATION_REGISTER_OUT_OF_RANGE;
             return nullptr;
         }
         return &(Registers[registerIndex]);
     }
 
-    Flags = RegisterFlags::FLAGS_ERR_LOCATION_FORMAT_UNSUPPORTED;
+    Error = ContextError::LOCATION_FORMAT_UNSUPPORTED;
     return nullptr;
 }
 
