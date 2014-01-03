@@ -2,53 +2,101 @@
 #define __CORELOGGER_H__
 
 #include <string>
+#include <iostream> // cstodo ugh
 
 namespace VeeEm { namespace Core {
 
 enum class LogLevel
 {
-    LOG_ERROR = 0,
-    LOG_WARNING = 1,
-    LOG_INFO = 2,
-    LOG_DEBUG = 3
+    ERROR = 0,
+    WARNING = 1,
+    INFO = 2,
+    DEBUG = 3
 };
 
 class CoreLogger
 {
 public:
 
-    static void Initialize(enum LogLevel level)
-    {
-        if (s_CoreLogger == nullptr)
-        {
-            s_CoreLogger = new CoreLogger(level);
-        }
-    }
+    static void Initialize(enum LogLevel level);
+    static CoreLogger& Instance();
+    static void Teardown();
 
-    static void Write(enum LogLevel level, const std::string& message)
-    {
-        if (s_CoreLogger != nullptr)
-        {
-            s_CoreLogger->WriteInternal(level, message);
-        }
-    }
+    LogLevel Level() const { return m_Level; }
 
-    static void Teardown()
-    {
-        if (s_CoreLogger != nullptr)
-        {
-            delete s_CoreLogger;
-        }
-    }
+    bool IsStart() const { return m_IsStart; }
+    void IsStart(bool val) { m_IsStart = val; }
+
+    friend class Level;
+    friend class End;
 
 private:
     CoreLogger(enum LogLevel level);
-    void WriteInternal(enum LogLevel level, const std::string& message) const;
 
-    LogLevel m_level;
+    LogLevel m_Level;
+    bool m_IsStart;
 
     static CoreLogger* s_CoreLogger;
 };
+
+class Level
+{
+public:
+    Level(LogLevel level) : m_Level(level) { }
+
+    CoreLogger& operator()(CoreLogger& logger) const;
+
+private:
+    LogLevel m_Level;
+};
+
+class End
+{
+public:
+    End() { }
+
+    CoreLogger& operator()(CoreLogger& logger) const;
+};
+
+
+template<typename T> CoreLogger& operator<<(CoreLogger& logger, const T& val)
+{
+    using namespace std;
+
+    if (logger.IsStart())
+    {
+        switch (logger.Level())
+        {
+        case LogLevel::ERROR:
+            cout << "!! ERROR: ";
+            break;
+        case LogLevel::WARNING:
+            cout << "~~ WARN:  ";
+            break;
+        case LogLevel::INFO:
+            cout << "## INFO:  ";
+            break;
+        case LogLevel::DEBUG:
+            cout << "** DEBUG: ";
+            break;
+        }
+        logger.IsStart(false);
+    }
+
+    cout << val;
+
+    return logger;
+}
+
+inline CoreLogger& operator<<(CoreLogger& logger, Level manip)
+{
+    return manip(logger);
+}
+
+inline CoreLogger& operator<<(CoreLogger& logger, End manip)
+{
+    return manip(logger);
+}
 
 } } // namespace VeeEm::Core
 

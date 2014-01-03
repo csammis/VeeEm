@@ -6,35 +6,42 @@ using namespace VeeEm::Core;
 
 CoreLogger* CoreLogger::s_CoreLogger;
 
+void CoreLogger::Initialize(enum LogLevel level)
+{
+    if (s_CoreLogger == nullptr)
+    {
+        s_CoreLogger = new CoreLogger(level);
+    }
+}
+
+CoreLogger& CoreLogger::Instance()
+{
+    return (*s_CoreLogger);
+}
+
+void CoreLogger::Teardown()
+{
+    if (s_CoreLogger != nullptr)
+    {
+        delete s_CoreLogger;
+    }
+}
+
 CoreLogger::CoreLogger(enum LogLevel level)
-    : m_level(level)
+    : m_Level(level), m_IsStart(true)
 {
 }
 
-void CoreLogger::WriteInternal(enum LogLevel level, const std::string& message) const
+CoreLogger& Level::operator()(CoreLogger& logger) const
 {
-    /*if (level > m_level)
-    {
-        return;
-    }*/
+    logger.m_Level = m_Level;
+    return logger;
+}
 
-    using namespace std;
-    switch (level)
-    {
-    case LogLevel::LOG_ERROR:
-        cout << "!! ERROR: ";
-        break;
-    case LogLevel::LOG_WARNING:
-        cout << "~~ WARN:  ";
-        break;
-    case LogLevel::LOG_INFO:
-        cout << "## INFO:  ";
-        break;
-    case LogLevel::LOG_DEBUG:
-        cout << "** DEBUG: ";
-        break;
-    }
-
-    cout << message << endl;
+CoreLogger& End::operator()(CoreLogger& logger) const
+{
+    std::cout << std::endl;
+    logger.m_IsStart = true;
+    return logger;
 }
 

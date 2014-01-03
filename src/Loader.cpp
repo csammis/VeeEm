@@ -40,7 +40,7 @@ int RunProgram(std::ifstream& infile)
     using namespace VeeEm::Core;
     using namespace VeeEm::Core::Utils;
 
-    CoreLogger::Initialize(LogLevel::LOG_DEBUG);
+    CoreLogger::Initialize(LogLevel::DEBUG);
 
     vector<Instruction> instructions;
     if (!LoadInstructions(infile, instructions))
@@ -48,10 +48,8 @@ int RunProgram(std::ifstream& infile)
         return 1;
     }
 
-    stringstream message;
-    message << "Loaded " << instructions.size() << " instructions";
-    CoreLogger::Write(LogLevel::LOG_DEBUG, message.str());
-
+    CoreLogger::Instance() << Level(LogLevel::DEBUG) << "Loaded " << instructions.size() << " instructions" << End();
+    
     Context context;
     for (Instruction& inst : instructions)
     {
@@ -86,9 +84,7 @@ bool LoadInstructions(std::ifstream& infile, std::vector<Instruction>& instructi
         auto lookup = opcodeParses.find(name);
         if (lookup == opcodeParses.end())
         {
-            stringstream message;
-            message << "Unknown instruction found during parse: " << name << " (line " << linenumber << ")";
-            CoreLogger::Write(LogLevel::LOG_ERROR, message.str());
+            CoreLogger::Instance() << Level(LogLevel::ERROR) << "Unknown instuction found during parse: " << name << " (line " << linenumber << ")" << End();
             return false;
         }
 

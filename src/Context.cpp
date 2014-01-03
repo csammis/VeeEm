@@ -21,7 +21,7 @@ unsigned int* Context::ResolveLocationReference(const std::string& arg)
 
     if (arg.empty())
     {
-        CoreLogger::Write(LogLevel::LOG_WARNING, "ResolveLocationReference called with empty argument. This is almost certainly wrong.");
+        CoreLogger::Instance() << Level(LogLevel::WARNING) << "ResolveLocationReference called with empty argument. This is almost certainly wrong." << End();
         return nullptr;
     }
 
@@ -30,7 +30,7 @@ unsigned int* Context::ResolveLocationReference(const std::string& arg)
         int registerIndex = strtol(arg.substr(1).c_str(), nullptr, 0);
         if (registerIndex < 0 || registerIndex > 31)
         {
-            CoreLogger::Write(LogLevel::LOG_ERROR, "ResolveLocationReference asked for out-of-range register value (" + arg + ")");
+            CoreLogger::Instance() << Level(LogLevel::ERROR) << "ResolveLocationReference asked for out-of-range register value (" << arg << ")" << End();
             Error = ContextError::LOCATION_REGISTER_OUT_OF_RANGE;
             return nullptr;
         }
