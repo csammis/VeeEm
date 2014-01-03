@@ -36,19 +36,18 @@ int main(int argc, char** argv)
 
 int RunProgram(std::ifstream& infile)
 {
-    using namespace std;
     using namespace VeeEm::Core;
-    using namespace VeeEm::Core::Utils;
+    using namespace VeeEm::Core::Logger;
 
-    CoreLogger::Initialize(LogLevel::DEBUG);
+    Log::Initialize(LogLevel::DEBUG);
 
-    vector<Instruction> instructions;
+    std::vector<Instruction> instructions;
     if (!LoadInstructions(infile, instructions))
     {
         return 1;
     }
 
-    CoreLogger::Instance() << Level(LogLevel::DEBUG) << "Loaded " << instructions.size() << " instructions" << End();
+    Log::Instance() << Level(LogLevel::DEBUG) << "Loaded " << instructions.size() << " instructions" << End();
     
     Context context;
     for (Instruction& inst : instructions)
@@ -56,7 +55,7 @@ int RunProgram(std::ifstream& infile)
         inst.Execute(context);
     }
 
-    CoreLogger::Teardown();
+    Log::Teardown();
     return 0;
 }
 
@@ -64,6 +63,7 @@ bool LoadInstructions(std::ifstream& infile, std::vector<Instruction>& instructi
 {
     using namespace std;
     using namespace VeeEm::Core;
+    using namespace VeeEm::Core::Logger;
     using namespace VeeEm::Core::Utils;
 
     InitOpcodeParseMap();
@@ -84,7 +84,7 @@ bool LoadInstructions(std::ifstream& infile, std::vector<Instruction>& instructi
         auto lookup = opcodeParses.find(name);
         if (lookup == opcodeParses.end())
         {
-            CoreLogger::Instance() << Level(LogLevel::ERROR) << "Unknown instuction found during parse: " << name << " (line " << linenumber << ")" << End();
+            Log::Instance() << Level(LogLevel::ERROR) << "Unknown instuction found during parse: " << name << " (line " << linenumber << ")" << End();
             return false;
         }
 

@@ -4,7 +4,7 @@
 #include <string>
 #include <iostream> // cstodo ugh
 
-namespace VeeEm { namespace Core {
+namespace VeeEm { namespace Core { namespace Logger {
 
 enum class LogLevel
 {
@@ -14,12 +14,12 @@ enum class LogLevel
     DEBUG = 3
 };
 
-class CoreLogger
+class Log
 {
 public:
 
-    static void Initialize(enum LogLevel level);
-    static CoreLogger& Instance();
+    static void Initialize(enum LogLevel threshold);
+    static Log& Instance();
     static void Teardown();
 
     LogLevel Level() const { return m_Level; }
@@ -31,12 +31,13 @@ public:
     friend class End;
 
 private:
-    CoreLogger(enum LogLevel level);
+    Log(enum LogLevel level);
 
     LogLevel m_Level;
+    LogLevel m_Threshold;
     bool m_IsStart;
 
-    static CoreLogger* s_CoreLogger;
+    static Log* s_Log;
 };
 
 class Level
@@ -44,7 +45,7 @@ class Level
 public:
     Level(LogLevel level) : m_Level(level) { }
 
-    CoreLogger& operator()(CoreLogger& logger) const;
+    Log& operator()(Log& logger) const;
 
 private:
     LogLevel m_Level;
@@ -55,11 +56,11 @@ class End
 public:
     End() { }
 
-    CoreLogger& operator()(CoreLogger& logger) const;
+    Log& operator()(Log& logger) const;
 };
 
 
-template<typename T> CoreLogger& operator<<(CoreLogger& logger, const T& val)
+template<typename T> Log& operator<<(Log& logger, const T& val)
 {
     using namespace std;
 
@@ -88,16 +89,16 @@ template<typename T> CoreLogger& operator<<(CoreLogger& logger, const T& val)
     return logger;
 }
 
-inline CoreLogger& operator<<(CoreLogger& logger, Level manip)
+inline Log& operator<<(Log& logger, Level manip)
 {
     return manip(logger);
 }
 
-inline CoreLogger& operator<<(CoreLogger& logger, End manip)
+inline Log& operator<<(Log& logger, End manip)
 {
     return manip(logger);
 }
 
-} } // namespace VeeEm::Core
+} } } // namespace VeeEm::Core::Logger
 
 #endif //__CORELOGGER_H__

@@ -17,11 +17,11 @@ Context::~Context()
 
 unsigned int* Context::ResolveLocationReference(const std::string& arg)
 {
-    using namespace VeeEm::Core;
+    using namespace VeeEm::Core::Logger;
 
     if (arg.empty())
     {
-        CoreLogger::Instance() << Level(LogLevel::WARNING) << "ResolveLocationReference called with empty argument. This is almost certainly wrong." << End();
+        Log::Instance() << Level(LogLevel::WARNING) << "ResolveLocationReference called with empty argument. This is almost certainly wrong." << End();
         return nullptr;
     }
 
@@ -30,7 +30,7 @@ unsigned int* Context::ResolveLocationReference(const std::string& arg)
         int registerIndex = strtol(arg.substr(1).c_str(), nullptr, 0);
         if (registerIndex < 0 || registerIndex > 31)
         {
-            CoreLogger::Instance() << Level(LogLevel::ERROR) << "ResolveLocationReference asked for out-of-range register value (" << arg << ")" << End();
+            Log::Instance() << Level(LogLevel::ERROR) << "ResolveLocationReference asked for out-of-range register value (" << arg << ")" << End();
             Error = ContextError::LOCATION_REGISTER_OUT_OF_RANGE;
             return nullptr;
         }

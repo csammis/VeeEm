@@ -2,43 +2,43 @@
 
 #include <iostream>
 
-using namespace VeeEm::Core;
+using namespace VeeEm::Core::Logger;
 
-CoreLogger* CoreLogger::s_CoreLogger;
+Log* Log::s_Log;
 
-void CoreLogger::Initialize(enum LogLevel level)
+void Log::Initialize(enum LogLevel threshold)
 {
-    if (s_CoreLogger == nullptr)
+    if (s_Log == nullptr)
     {
-        s_CoreLogger = new CoreLogger(level);
+        s_Log = new Log(threshold);
     }
 }
 
-CoreLogger& CoreLogger::Instance()
+Log& Log::Instance()
 {
-    return (*s_CoreLogger);
+    return (*s_Log);
 }
 
-void CoreLogger::Teardown()
+void Log::Teardown()
 {
-    if (s_CoreLogger != nullptr)
+    if (s_Log != nullptr)
     {
-        delete s_CoreLogger;
+        delete s_Log;
     }
 }
 
-CoreLogger::CoreLogger(enum LogLevel level)
-    : m_Level(level), m_IsStart(true)
+Log::Log(enum LogLevel level)
+    : m_Level(level), m_Threshold(level), m_IsStart(true)
 {
 }
 
-CoreLogger& Level::operator()(CoreLogger& logger) const
+Log& Level::operator()(Log& logger) const
 {
     logger.m_Level = m_Level;
     return logger;
 }
 
-CoreLogger& End::operator()(CoreLogger& logger) const
+Log& End::operator()(Log& logger) const
 {
     std::cout << std::endl;
     logger.m_IsStart = true;
