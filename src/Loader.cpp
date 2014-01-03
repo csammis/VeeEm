@@ -47,7 +47,7 @@ int RunProgram(std::ifstream& infile)
         return 1;
     }
 
-    Log::Instance() << Level(LogLevel::DEBUG) << "Loaded " << instructions.size() << " instructions" << End();
+    Log::Instance(LogLevel::DEBUG) << "Loaded " << instructions.size() << " instructions" << End();
     
     Context context;
     for (Instruction& inst : instructions)
@@ -84,7 +84,7 @@ bool LoadInstructions(std::ifstream& infile, std::vector<Instruction>& instructi
         auto lookup = opcodeParses.find(name);
         if (lookup == opcodeParses.end())
         {
-            Log::Instance() << Level(LogLevel::ERROR) << "Unknown instuction found during parse: " << name << " (line " << linenumber << ")" << End();
+            Log::Instance(LogLevel::ERROR) << "Unknown instuction found during parse: " << name << " (line " << linenumber << ")" << End();
             return false;
         }
 

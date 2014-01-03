@@ -14,8 +14,9 @@ void Log::Initialize(enum LogLevel threshold)
     }
 }
 
-Log& Log::Instance()
+Log& Log::Instance(enum LogLevel level)
 {
+    s_Log->m_Level = level;
     return (*s_Log);
 }
 
@@ -30,12 +31,6 @@ void Log::Teardown()
 Log::Log(enum LogLevel level)
     : m_Level(level), m_Threshold(level), m_IsStart(true)
 {
-}
-
-Log& Level::operator()(Log& logger) const
-{
-    logger.m_Level = m_Level;
-    return logger;
 }
 
 Log& End::operator()(Log& logger) const

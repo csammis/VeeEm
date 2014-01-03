@@ -19,7 +19,7 @@ class Log
 public:
 
     static void Initialize(enum LogLevel threshold);
-    static Log& Instance();
+    static Log& Instance(enum LogLevel level);
     static void Teardown();
 
     LogLevel Level() const { return m_Level; }
@@ -38,17 +38,6 @@ private:
     bool m_IsStart;
 
     static Log* s_Log;
-};
-
-class Level
-{
-public:
-    Level(LogLevel level) : m_Level(level) { }
-
-    Log& operator()(Log& logger) const;
-
-private:
-    LogLevel m_Level;
 };
 
 class End
@@ -87,11 +76,6 @@ template<typename T> Log& operator<<(Log& logger, const T& val)
     cout << val;
 
     return logger;
-}
-
-inline Log& operator<<(Log& logger, Level manip)
-{
-    return manip(logger);
 }
 
 inline Log& operator<<(Log& logger, End manip)
