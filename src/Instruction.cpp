@@ -43,17 +43,10 @@ bool Instruction::Execute(Context& context)
         }
         break;
     case Opcode::INCREMENT:
-        {
-            unsigned int* pLoc = context.ResolveLocationReference(m_Parameters[0]);
-            *pLoc = (*pLoc) + 1;
-        }
-        break;
     case Opcode::DECREMENT:
-        {
-            unsigned int* pLoc = context.ResolveLocationReference(m_Parameters[0]);
-            *pLoc = (*pLoc) - 1;
-        }
-        break;
+        m_Parameters.resize(3);
+        m_Parameters[1] = m_Parameters[0];
+        m_Parameters[2] = (Opcode() == Opcode::INCREMENT) ? "$1" : "$-1";
     case Opcode::ADD:
     case Opcode::SUBTRACT:
         {
@@ -64,13 +57,13 @@ bool Instruction::Execute(Context& context)
                 return false;
             }
 
-            if (Opcode() == Opcode::ADD)
+            if (Opcode() == Opcode::SUBTRACT)
             {
-                *pReg = a + b;
+                *pReg = a - b;
             }
             else
             {
-                *pReg = a - b;
+                *pReg = a + b;
             }
         }
         break;
