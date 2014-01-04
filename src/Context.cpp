@@ -100,7 +100,7 @@ bool Context::ValidateRegister(const std::string& arg, int& registerIndex)
 {
     using namespace VeeEm::Core::Logger;
 
-    registerIndex = strtol(arg.substr(1).c_str(), nullptr, 0);
+    registerIndex = strtol(arg.substr(1).c_str(), nullptr, 10);
     if (registerIndex < 0 || registerIndex > 31)
     {
         Log::Instance(LogLevel::ERROR) << "ResolveLocationReference asked for out-of-range register value (" << arg << ")" << End();
