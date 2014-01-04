@@ -30,12 +30,18 @@ load r1, $-3
 
 ## Instruction Set
 *   **add** - Adds together two values and sets the result in a register
+
     `add dest, src1, src2`
-```
-load r1, $4
-load r2, $3
-add r0, r1, r2
-```
+
+        load r1, $4
+        load r2, $3
+        add r0, r1, r2
+
     `src1` and `src2` may be registers or constants. `dest` must be a register.
+
 *   **incr** - A synonym for `add dest, dest, 0x01`
+    
     `incr dest`
+
+        load r1, $3
+        incr r1
