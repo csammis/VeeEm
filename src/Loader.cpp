@@ -51,11 +51,12 @@ int RunProgram(std::ifstream& infile)
     Log::Instance(LogLevel::DEBUG) << "Loaded " << instructions.size() << " instructions" << End();
     
     Context context;
-    for (Instruction& inst : instructions)
+    while (context.InstrPtr < instructions.size())
     {
-        inst.Execute(context);
+        Instruction current = instructions[context.InstrPtr];
+        current.Execute(context);
     }
-
+    
     Log::Teardown();
     return 0;
 }
