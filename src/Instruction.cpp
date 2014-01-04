@@ -75,10 +75,10 @@ bool Instruction::Execute(Context& context)
                 return false;
             }
 
-            context.CompareFlags = 0;
-            if (a == b) context.CompareFlags |= 0x01;
-            if (a < b) context.CompareFlags |= 0x02;
-            if (a > b) context.CompareFlags |= 0x04;
+            context.CompareFlags = 0x01;
+            if (a == b) context.CompareFlags |= 0x02;
+            if (a < b) context.CompareFlags |= 0x04;
+            if (a > b) context.CompareFlags |= 0x08;
         }
         break;
     case Opcode::JUMP_EQUAL:
@@ -111,12 +111,18 @@ bool Instruction::Execute(Context& context)
 
 bool Instruction::DoJump(Context& context)
 {
-    if ((m_Opcode == Opcode::JUMP_NOT_EQUAL && !(context.CompareFlags & 0x01)) ||
-        (m_Opcode == Opcode::JUMP_EQUAL && (context.CompareFlags & 0x01)) ||
-        (m_Opcode == Opcode::JUMP_LESS_THAN && (context.CompareFlags & 0x02)) ||
-        (m_Opcode == Opcode::JUMP_GREATER_THAN && (context.CompareFlags & 0x04)) ||
-        (m_Opcode == Opcode::JUMP_LESS_THAN_EQUAL_TO && (context.CompareFlags & 0x03)) ||
-        (m_Opcode == Opcode::JUMP_GREATER_THAN_EQUAL_TO && (context.CompareFlags & 0x05))
+    if (!(context.CompareFlags & 0x01))
+    {
+        context.Error = ContextError::CONDITIONAL_JUMP_WITHOUT_COMPARE;
+        return false;
+    }
+
+    if ((m_Opcode == Opcode::JUMP_NOT_EQUAL && !(context.CompareFlags & 0x02)) ||
+        (m_Opcode == Opcode::JUMP_EQUAL && (context.CompareFlags & 0x02)) ||
+        (m_Opcode == Opcode::JUMP_LESS_THAN && (context.CompareFlags & 0x04)) ||
+        (m_Opcode == Opcode::JUMP_GREATER_THAN && (context.CompareFlags & 0x08)) ||
+        (m_Opcode == Opcode::JUMP_LESS_THAN_EQUAL_TO && (context.CompareFlags & 0x06)) ||
+        (m_Opcode == Opcode::JUMP_GREATER_THAN_EQUAL_TO && (context.CompareFlags & 0x0A))
        )
     {
         unsigned int offset = 0;
@@ -126,6 +132,8 @@ bool Instruction::DoJump(Context& context)
         }
         context.InstrPtr += offset - 1; // Because the Execute is going to increment IP anyway
     }
+
+    context.CompareFlags = 0x00;
     return true;
 }
 

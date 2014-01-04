@@ -54,9 +54,16 @@ int RunProgram(std::ifstream& infile)
     while (context.InstrPtr < instructions.size())
     {
         Instruction current = instructions[context.InstrPtr];
-        current.Execute(context);
+        if (!current.Execute(context))
+        {
+            Log::Instance(LogLevel::ERROR) << "Caught runtime error! Dumping current context:" << End();
+            Instruction whoops(Opcode::SYSCALL, 1);
+            whoops.SetParameter(0, "0");
+            whoops.Execute(context);
+        }
     }
-    
+    Log::Instance(LogLevel::DEBUG) << "Halting." << End();
+
     Log::Teardown();
     return 0;
 }
@@ -135,9 +142,11 @@ bool LoadInstructions(std::ifstream& infile, std::vector<Instruction>& instructi
         {
             inst.SetParameter(index++, s);
         }
+        
         instructions.push_back(inst);
     }
     infile.close();
 
     return successfulParse;
 }
+

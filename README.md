@@ -54,30 +54,31 @@ load r1, $-3
     The `comp` instruction is used to set internal flags for the next conditional jump instruction. `val1` and `val2` may be registers or constants.
 
 #### Conditional Jumps
-*   Jump to an offset if the last compared values were:
+Jump to an offset if the last values by a `comp` instruction were:
 
-    **je** - equal
+*   **je** - equal
 
-    **jne** - not equal
+*   **jne** - not equal
 
-    **jlt** - `val1` less than `val2`
+*   **jlt** - `val1` less than `val2`
 
-    **jgt** - `val1` greater than `val2`
+*   **jgt** - `val1` greater than `val2`
 
-    **jlte** - `val1` less than or equal to `val2`
+*   **jlte** - `val1` less than or equal to `val2`
 
-    **jgte** - `val1` greater than or equal to `val2`
+*   **jgte** - `val1` greater than or equal to `val2`
 
-    Syntax: `je offset`
+Syntax: `je offset`
 
-    Example:
+Example:
 
-        load r1, $0x01
-        comp r1, $0x01
-        je $-2
+    load r1, $0x01
+    comp r1, $0x01
+    je $-2
 
-    `offset` is a constant value representing *number of instructions from current instruction*. In the preceding example the `load` instruction will be the next instruction executed after the jump.
+`offset` is a constant value representing *number of instructions from current instruction*. In the preceding example the `load` instruction will be the next instruction executed after the jump.
 
+Executing a conditional jump instruction without first executing a `comp` instruction results in a runtime error. Successful execution of a conditional jump clears the `comp` internal flags so that a subsequent conditional jump will require a new `comp` to have been performed. 
 *   **decr** - A synonym for `sub dest, dest, 0x01`
     
     Syntax: `decr dest`
