@@ -9,6 +9,7 @@
 #include "Context.h"
 #include "ParseUtils.h"
 #include "CoreLogger.h"
+#include "VeeEmProgram.h"
 
 bool LoadInstructions(std::ifstream& infile, std::vector<Instruction>& instructions);
 int RunProgram(std::ifstream& infile);
@@ -49,19 +50,12 @@ int RunProgram(std::ifstream& infile)
     }
 
     Log::Instance(LogLevel::DEBUG) << "Loaded " << instructions.size() << " instructions" << End();
+    Log::Instance(LogLevel::DEBUG) << "Beginning execution." << End();
     
-    Context context;
-    while (context.InstrPtr < instructions.size())
-    {
-        Instruction current = instructions[context.InstrPtr];
-        if (!current.Execute(context))
-        {
-            Log::Instance(LogLevel::ERROR) << "Caught runtime error! Dumping current context:" << End();
-            Instruction whoops(Opcode::SYSCALL, 1);
-            whoops.SetParameter(0, "0");
-            whoops.Execute(context);
-        }
-    }
+    VeeEmProgram program;
+    program.SetInstructions(instructions);
+    program.Execute();
+    
     Log::Instance(LogLevel::DEBUG) << "Halting." << End();
 
     Log::Teardown();
