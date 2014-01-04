@@ -23,6 +23,8 @@ public:
 private:
     std::vector<std::string> m_Parameters;
     enum Opcode m_Opcode;
+
+    bool DoJump(Context& context);
 };
 
 #endif // __INSTRUCTION_H__

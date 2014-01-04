@@ -51,8 +51,7 @@ bool Context::ResolveValue(const std::string& arg, unsigned int& value)
 
     if (arg[0] == '$')
     {
-        value = static_cast<unsigned int>(strtol(arg.substr(1).c_str(), nullptr, 0));
-        return true;
+        return ValidateConstant(arg, value);
     }
     else if (arg[0] == 'r')
     {
@@ -69,6 +68,32 @@ bool Context::ResolveValue(const std::string& arg, unsigned int& value)
     Error = ContextError::LOCATION_FORMAT_UNSUPPORTED;
 
     return false;
+}
+
+bool Context::ResolveJumpOffset(const std::string& arg, unsigned int& offset)
+{
+    using namespace VeeEm::Core::Logger;
+
+    if (arg.empty())
+    {
+        Log::Instance(LogLevel::WARNING) << "ResolveJumpOffset called with empty argument." << End();
+        return false;
+    }
+
+    if (arg[0] == '$')
+    {
+        return ValidateConstant(arg, offset);
+    }
+
+    Log::Instance(LogLevel::ERROR) << "Non-constant values are not supported as jump offsets" << End();
+    Error = ContextError::LOCATION_FORMAT_UNSUPPORTED;
+    return false;
+}
+
+bool Context::ValidateConstant(const std::string& arg, unsigned int& value)
+{
+    value = static_cast<unsigned int>(strtol(arg.substr(1).c_str(), nullptr, 0));
+    return true;
 }
 
 bool Context::ValidateRegister(const std::string& arg, int& registerIndex)

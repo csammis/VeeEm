@@ -17,8 +17,10 @@ public:
 
     unsigned int* ResolveLocationReference(const std::string& arg);
     bool ResolveValue(const std::string& arg, unsigned int& value);
+    bool ResolveJumpOffset(const std::string& arg, unsigned int& offset);
 
 private:
+    bool ValidateConstant(const std::string& arg, unsigned int& value);
     bool ValidateRegister(const std::string& arg, int& registerIndex);
 };
 

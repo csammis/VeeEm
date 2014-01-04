@@ -25,6 +25,12 @@ void InitOpcodeParseMap()
     opcodeParses["add"] = std::make_pair(Opcode::ADD, 3);
     opcodeParses["sub"] = std::make_pair(Opcode::SUBTRACT, 3);
     opcodeParses["comp"] = std::make_pair(Opcode::COMPARE, 2);
+    opcodeParses["je"] = std::make_pair(Opcode::JUMP_EQUAL, 1);
+    opcodeParses["jne"] = std::make_pair(Opcode::JUMP_NOT_EQUAL, 1);
+    opcodeParses["jlt"] = std::make_pair(Opcode::JUMP_LESS_THAN, 1);
+    opcodeParses["jlte"] = std::make_pair(Opcode::JUMP_LESS_THAN_EQUAL_TO, 1);
+    opcodeParses["jgt"] = std::make_pair(Opcode::JUMP_GREATER_THAN, 1);
+    opcodeParses["jgte"] = std::make_pair(Opcode::JUMP_GREATER_THAN_EQUAL_TO, 1);
     opcodeParses["syscall"] = std::make_pair(Opcode::SYSCALL, 1);
 }
 

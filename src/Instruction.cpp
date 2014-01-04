@@ -81,6 +81,17 @@ bool Instruction::Execute(Context& context)
             if (a > b) context.CompareFlags |= 0x04;
         }
         break;
+    case Opcode::JUMP_EQUAL:
+    case Opcode::JUMP_NOT_EQUAL:
+    case Opcode::JUMP_LESS_THAN:
+    case Opcode::JUMP_GREATER_THAN:
+    case Opcode::JUMP_LESS_THAN_EQUAL_TO:
+    case Opcode::JUMP_GREATER_THAN_EQUAL_TO:
+        if (!DoJump(context))
+        {
+            return false;
+        }
+        break;
     case Opcode::SYSCALL:
         {
             int arg = strtol(m_Parameters[0].c_str(), nullptr, 0);
@@ -97,4 +108,25 @@ bool Instruction::Execute(Context& context)
     context.InstrPtr++;
     return true;
 }
+
+bool Instruction::DoJump(Context& context)
+{
+    if ((m_Opcode == Opcode::JUMP_NOT_EQUAL && !(context.CompareFlags & 0x01)) ||
+        (m_Opcode == Opcode::JUMP_EQUAL && (context.CompareFlags & 0x01)) ||
+        (m_Opcode == Opcode::JUMP_LESS_THAN && (context.CompareFlags & 0x02)) ||
+        (m_Opcode == Opcode::JUMP_GREATER_THAN && (context.CompareFlags & 0x04)) ||
+        (m_Opcode == Opcode::JUMP_LESS_THAN_EQUAL_TO && (context.CompareFlags & 0x03)) ||
+        (m_Opcode == Opcode::JUMP_GREATER_THAN_EQUAL_TO && (context.CompareFlags & 0x05))
+       )
+    {
+        unsigned int offset = 0;
+        if (!context.ResolveJumpOffset(m_Parameters[0], offset))
+        {
+            return false;
+        }
+        context.InstrPtr += offset - 1; // Because the Execute is going to increment IP anyway
+    }
+    return true;
+}
+
 
