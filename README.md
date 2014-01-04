@@ -39,7 +39,7 @@ load r1, $-3
         load r2, $3
         add r0, r1, r2
 
-    `src1` and `src2` may be registers or constants. `dest` must be a register.
+    The `add` instruction computes `src1 + src2` and stores the result in `dest`. `src1` and `src2` may be registers or constants. `dest` must be a register.
 
 *   **comp** - Compares two values and sets a flag in the current execution context
 
@@ -52,6 +52,59 @@ load r1, $-3
         comp r1, r2
 
     The `comp` instruction is used to set internal flags for the next conditional jump instruction. `val1` and `val2` may be registers or constants.
+
+*   **decr** - A synonym for `sub dest, dest, 0x01`
+    
+    Syntax: `decr dest`
+
+    Example:
+
+        load r1, $3
+        decr r1
+
+*   **incr** - A synonym for `add dest, dest, 0x01`
+    
+    Syntax: `incr dest`
+
+    Example:
+
+        load r1, $3
+        incr r1
+
+*   **load** - Load a value into a register
+
+    Syntax: `load dest, value`
+
+    Example:
+
+        load r1, $0x12345678
+        load r2, r3
+
+    `value` may be a register or a constant. `dest` must be a register.
+
+*   **sub** - Subtracts one value from another and sets the result in a register
+
+    Syntax: `sub dest, src1, src2`
+
+    Example:
+
+        load r1, $4
+        load r2, $3
+        sub r0, r1, r2
+
+    The `sub` instruction computes `src1 - src2` and stores the result in `dest`. `src1` and `src2` may be registers or constants. `dest` must be a register.
+
+*  **syscall** - Invoke a system-defined procedure
+
+    Syntax: `syscall index`
+
+    Example:
+
+        load r1, $4
+        syscall 0
+
+    `index` is the zero-based index of the system call to invoke. See [System Calls](#system-calls) for the list of supported system calls.
+
 
 #### Conditional Jumps
 Jump to an offset if the last values by a `comp` instruction were:
@@ -79,21 +132,11 @@ Example:
 `offset` is a constant value representing *number of instructions from current instruction*. In the preceding example the `load` instruction will be the next instruction executed after the jump.
 
 Executing a conditional jump instruction without first executing a `comp` instruction results in a runtime error. Successful execution of a conditional jump clears the `comp` internal flags so that a subsequent conditional jump will require a new `comp` to have been performed. 
-*   **decr** - A synonym for `sub dest, dest, 0x01`
-    
-    Syntax: `decr dest`
 
-    Example:
+#### System Calls
 
-        load r1, $3
-        decr r1
+*   **DUMPCONTEXT**
 
+    Call index: 0
 
-*   **incr** - A synonym for `add dest, dest, 0x01`
-    
-    Syntax: `incr dest`
-
-    Example:
-
-        load r1, $3
-        incr r1
+    Prints a formatted list of the current execution context's registers and flags to the console. This system call is automatically invoked when a runtime error occurs before the system halts.
