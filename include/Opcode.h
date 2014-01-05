@@ -18,4 +18,9 @@ enum class Opcode
     SYSCALL
 };
 
+// Use these constants to define a range of opcodes which support rebasing
+#define OPCODE_REBASE_MIN Opcode::JUMP_EQUAL
+#define OPCODE_REBASE_MAX Opcode::JUMP_GREATER_THAN_EQUAL_TO
+
 #endif //__OPCODE_H__
+

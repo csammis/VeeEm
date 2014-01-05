@@ -6,6 +6,7 @@
 #include <map>
 
 class Instruction;
+class Context;
 
 class VeeEmProgram
 {
@@ -21,6 +22,8 @@ public:
 private:
     std::map<std::string, int> m_Labels;
     std::vector<Instruction> m_Instructions;
+
+    bool Rebase(Instruction& instruction, Context& context) const;
 };
 
 #endif //__VEEEMPROGRAM_H__

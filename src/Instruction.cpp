@@ -7,7 +7,7 @@
 #include <stdlib.h>
 
 Instruction::Instruction(enum Opcode opcode, int parameterCount)
-    : m_Opcode(opcode), m_Parameters(parameterCount)
+    : m_Opcode(opcode), m_Parameters(parameterCount), m_Rebased(false)
 {
 }
 

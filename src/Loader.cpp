@@ -11,7 +11,7 @@
 #include "CoreLogger.h"
 #include "VeeEmProgram.h"
 
-bool LoadInstructions(std::ifstream& infile, std::vector<Instruction>& instructions);
+bool LoadInstructions(std::ifstream& infile, std::vector<Instruction>& instructions, std::map<std::string, int>& labels);
 int RunProgram(std::ifstream& infile);
 
 int main(int argc, char** argv)
@@ -44,7 +44,8 @@ int RunProgram(std::ifstream& infile)
     Log::Initialize(LogLevel::DEBUG);
 
     std::vector<Instruction> instructions;
-    if (!LoadInstructions(infile, instructions))
+    std::map<std::string, int> labels;
+    if (!LoadInstructions(infile, instructions, labels))
     {
         return 1;
     }
@@ -54,6 +55,7 @@ int RunProgram(std::ifstream& infile)
     
     VeeEmProgram program;
     program.SetInstructions(instructions);
+    program.SetLabels(labels);
     program.Execute();
     
     Log::Instance(LogLevel::DEBUG) << "Halting." << End();
@@ -62,7 +64,7 @@ int RunProgram(std::ifstream& infile)
     return 0;
 }
 
-bool LoadInstructions(std::ifstream& infile, std::vector<Instruction>& instructions)
+bool LoadInstructions(std::ifstream& infile, std::vector<Instruction>& instructions, std::map<std::string, int>& labels)
 {
     using namespace std;
     using namespace VeeEm::Core;
@@ -77,15 +79,35 @@ bool LoadInstructions(std::ifstream& infile, std::vector<Instruction>& instructi
         string raw_instruction;
         getline(infile, raw_instruction);
 
-        string::size_type nameEnd = raw_instruction.find_first_of(' ');
+        raw_instruction = Trim(raw_instruction);
+        if (raw_instruction.empty())
+        {
+            continue;
+        }
+
+        string::size_type nameEnd = raw_instruction.find_first_of(" \t");
         if (nameEnd == string::npos)
         {
             nameEnd = raw_instruction.size();
         }
+        
         string name = raw_instruction.substr(0, nameEnd);
-
-        if (raw_instruction.empty() || name.empty())
+        if (name.empty())
         {
+            continue;
+        }
+
+        // Add a new label to the label-to-location map. Labels refer to the next non-label instruction.
+        if (name.back() == ':')
+        {
+            string label = name.substr(0, name.size() - 1);
+            if (label.empty())
+            {
+                Log::Instance(LogLevel::ERROR) << "Blank label found during parse at line " << linenumber << End();
+                successfulParse = false;
+                continue;
+            }
+            labels[label] = instructions.size();
             continue;
         }
 
@@ -96,6 +118,8 @@ bool LoadInstructions(std::ifstream& infile, std::vector<Instruction>& instructi
             successfulParse = false;
             continue;
         }
+
+        Log::Instance(LogLevel::DEBUG) << "Parsing line with instruction named " << name << End();
 
         list<string> parameterList;
         if (name.size() + 1 < raw_instruction.size())

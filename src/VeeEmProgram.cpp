@@ -1,5 +1,7 @@
 #include "VeeEmProgram.h"
 
+#include <sstream>
+
 #include "Instruction.h"
 #include "Context.h"
 #include "CoreLogger.h"
@@ -30,7 +32,8 @@ void VeeEmProgram::Execute() const
     while (context.InstrPtr < m_Instructions.size())
     {
         Instruction current = m_Instructions[context.InstrPtr];
-        if (!current.Execute(context))
+        
+        if (!(Rebase(current, context) && current.Execute(context)))
         {
             Log::Instance(LogLevel::ERROR) << "Caught runtime error! Dumping current context:" << End();
             Instruction whoops(Opcode::SYSCALL, 1);
@@ -39,5 +42,32 @@ void VeeEmProgram::Execute() const
             break;
         }
     }
+}
+
+bool VeeEmProgram::Rebase(Instruction& instruction, Context& context) const
+{
+    using namespace std;
+    using namespace VeeEm::Core::Logger;
+
+    if (instruction.Opcode() >= OPCODE_REBASE_MIN && instruction.Opcode() <= OPCODE_REBASE_MAX &&
+            !instruction.m_Rebased)
+    {
+        string parameter = instruction.m_Parameters[0];
+        if (parameter[0] == ':')
+        {
+            auto labelLocation = m_Labels.find(parameter.substr(1));
+            if (labelLocation == m_Labels.end())
+            {
+                Log::Instance(LogLevel::ERROR) << "Couldn't find label " << parameter << End();
+                context.Error = ContextError::LABEL_NOT_FOUND;
+                return false;
+            }
+            stringstream stream;
+            stream << "$" << (labelLocation->second - context.InstrPtr);
+            instruction.m_Parameters[0] = stream.str();
+        }
+        instruction.m_Rebased = true;
+    }
+    return true;
 }
 

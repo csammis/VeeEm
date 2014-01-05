@@ -20,9 +20,12 @@ public:
 
     bool Execute(Context& context);
 
+    friend class VeeEmProgram;
+
 private:
     std::vector<std::string> m_Parameters;
     enum Opcode m_Opcode;
+    bool m_Rebased;
 
     bool DoJump(Context& context);
 };
