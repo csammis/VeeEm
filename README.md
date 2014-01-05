@@ -7,6 +7,15 @@ A litle virtual machine I knocked together in C++. It's completely not useful an
 ## Syntax
 The VM language is being created more or less off the top of my head and is loosely based on what I recall from RISC architecture, particularly the Texas Instruments MSP430.
 
+### Labels
+Labels are markers in a source file which are used to reference specific instructions. Each label in a source file is a unique alphanumeric name followed by a colon.
+
+```
+LoopHere:
+```
+
+A label can be used as [a parameter of a jump instruction](#conditional-jumps).
+
 ### Instructions
 An instruction is one instruction name followed by a space and a sequence of zero or more parameters separated by commas. The parameter list length is dependent on the instruction. Program parsing fails if an instruction is specified with too few or too many parameters.
 
@@ -107,7 +116,7 @@ load r1, $-3
 
 
 #### Conditional Jumps
-Jump to an offset if the last values by a `comp` instruction were:
+Jump to an offset or label position if the last values passed to a `comp` instruction were:
 
 *   **je** - equal
 
@@ -123,13 +132,23 @@ Jump to an offset if the last values by a `comp` instruction were:
 
 Syntax: `je offset`
 
-Example:
+Example 1:
 
     load r1, $0x01
     comp r1, $0x01
     je $-2
 
-`offset` is a constant value representing *number of instructions from current instruction*. In the preceding example the `load` instruction will be the next instruction executed after the jump.
+Example 2:
+
+      load r1, $0x01
+    Test:
+      incr r1
+      comp r1, $0x02
+      jne :Test
+
+When using a conditional jump instruction with an offset, the offset is a constant value representing *number of instructions from current instruction*. In Example 1 the `load` instruction will be the next instruction executed after the jump.
+
+A label can be used as a the parameter to a jump instruction. When used as a parameter the label is written `<colon><labelname>` as in Example 2. This is backwards from how labels are specified themselves but it makes parameter type disambiguation a simple step.
 
 Executing a conditional jump instruction without first executing a `comp` instruction results in a runtime error. Successful execution of a conditional jump clears the `comp` internal flags so that a subsequent conditional jump will require a new `comp` to have been performed. 
 
@@ -140,3 +159,4 @@ Executing a conditional jump instruction without first executing a `comp` instru
     Call index: 0
 
     Prints a formatted list of the current execution context's registers and flags to the console. This system call is automatically invoked when a runtime error occurs before the system halts.
+
