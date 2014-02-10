@@ -1,13 +1,9 @@
-#include <iostream>
 #include <fstream>
-#include <sstream>
 #include <vector>
-#include <list>
 #include <string>
 
-#include "Instruction.h"
-#include "Context.h"
 #include "Parser.h"
+#include "Instruction.h"
 #include "CoreLogger.h"
 #include "VeeEmProgram.h"
 
@@ -18,10 +14,13 @@ int RunProgram(std::ifstream& infile);
 int main(int argc, char** argv)
 {
     using namespace std;
+    using namespace VeeEm::Core::Logger;
+
+    Log::Initialize(LogLevel::DEBUG);
 
     if (argc != 2)
     {
-        cout << "Usage: VeeEm <filename>" << endl;
+        Log::Instance(LogLevel::ERROR) << "Usage: VeeEm <filename>" << End();
         return 1;
     }
 
@@ -30,7 +29,7 @@ int main(int argc, char** argv)
     infile.open(filename.c_str());
     if (!infile.good())
     {
-        cout << "Unable to load " << filename << endl;
+        Log::Instance(LogLevel::ERROR) << "Unable to load " << filename << End();
         return 1;
     }
 
@@ -42,8 +41,6 @@ int RunProgram(std::ifstream& infile)
     using namespace VeeEm::Core;
     using namespace VeeEm::Core::Logger;
     using namespace VeeEm::Core::Parser;
-
-    Log::Initialize(LogLevel::DEBUG);
 
     std::vector<Instruction> instructions;
     LabelInstructionMap labels;
@@ -72,17 +69,16 @@ bool LoadInstructions(std::ifstream& infile, std::vector<Instruction>& instructi
         VeeEm::Core::Parser::LabelInstructionMap& labels, VeeEm::Core::Parser::LabelInstructionMap& sections)
 {
     using namespace std;
-    using namespace VeeEm::Core;
-    using namespace VeeEm::Core::Logger;
+    using namespace VeeEm::Core::Parser;
 
     bool successfulParse = true; // Optimism!
-    VeeEm::Core::Parser::Parser parser;
+    Parser parser;
     for (int linenumber = 1; infile.good(); linenumber++)
     {
         string raw_instruction;
         getline(infile, raw_instruction);
 
-        VeeEm::Core::Parser::Line line(raw_instruction, linenumber);
+        Line line(raw_instruction, linenumber);
         if (!parser.ParseLine(line, instructions, labels, sections))
         {
             successfulParse = false;

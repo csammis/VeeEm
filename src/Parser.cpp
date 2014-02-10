@@ -3,8 +3,6 @@
 #include "CoreLogger.h"
 #include "Opcode.h"
 
-#define ASSERT_NOT_COMMENT(s) if (s[0] == '#') return true;
-
 using namespace std;
 using namespace VeeEm::Core::Parser;
 using namespace VeeEm::Core::Logger;
