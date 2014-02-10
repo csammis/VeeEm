@@ -4,6 +4,12 @@ A litle virtual machine I knocked together in C++. It's completely not useful an
 ## Features
 32 32-bit general purpose registers (guaranteed initialized to zero at execution start) and a RISCy instruction set.
 
+## Building
+Built with Clang on OS X Mavericks
+```
+clang++ -std=c++11 -o VeeEm -Iinclude src/*.cpp
+```
+
 ## Syntax
 The VM language is being created more or less off the top of my head and is loosely based on what I recall from RISC architecture, particularly the Texas Instruments MSP430.
 
