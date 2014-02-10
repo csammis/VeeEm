@@ -9,7 +9,7 @@ enum class Opcode
     ADD,
     SUBTRACT,
     COMPARE,
-    // Don't add instructions between the jumps unless they support label as parameters! (see OPCODE_REBASE_MIN/MAX)
+    // Don't add instructions between the comments unless they support label as parameters! (see OPCODE_REBASE_MIN/MAX)
     JUMP_EQUAL,
     JUMP_NOT_EQUAL,
     JUMP_LESS_THAN,
@@ -17,7 +17,7 @@ enum class Opcode
     JUMP_GREATER_THAN,
     JUMP_GREATER_THAN_EQUAL_TO,
     CALL,
-    // Don't add instructions between the jumps!
+    // Don't add instructions between the comments!
     PUSH,
     POP,
     RETURN,
