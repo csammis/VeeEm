@@ -11,7 +11,8 @@
 #include "CoreLogger.h"
 #include "VeeEmProgram.h"
 
-bool LoadInstructions(std::ifstream& infile, std::vector<Instruction>& instructions, VeeEm::Core::Parser::LabelInstructionMap& labels);
+bool LoadInstructions(std::ifstream& infile, std::vector<Instruction>& instructions,
+        VeeEm::Core::Parser::LabelInstructionMap& labels, VeeEm::Core::Parser::LabelInstructionMap& sections);
 int RunProgram(std::ifstream& infile);
 
 int main(int argc, char** argv)
@@ -40,12 +41,14 @@ int RunProgram(std::ifstream& infile)
 {
     using namespace VeeEm::Core;
     using namespace VeeEm::Core::Logger;
+    using namespace VeeEm::Core::Parser;
 
     Log::Initialize(LogLevel::DEBUG);
 
     std::vector<Instruction> instructions;
-    std::map<std::string, int> labels;
-    if (!LoadInstructions(infile, instructions, labels))
+    LabelInstructionMap labels;
+    LabelInstructionMap sections;
+    if (!LoadInstructions(infile, instructions, labels, sections))
     {
         return 1;
     }
@@ -56,6 +59,7 @@ int RunProgram(std::ifstream& infile)
     VeeEmProgram program;
     program.SetInstructions(instructions);
     program.SetLabels(labels);
+    program.SetSections(sections);
     program.Execute();
     
     Log::Instance(LogLevel::DEBUG) << "Halting." << End();
@@ -64,7 +68,8 @@ int RunProgram(std::ifstream& infile)
     return 0;
 }
 
-bool LoadInstructions(std::ifstream& infile, std::vector<Instruction>& instructions, VeeEm::Core::Parser::LabelInstructionMap& labels)
+bool LoadInstructions(std::ifstream& infile, std::vector<Instruction>& instructions,
+        VeeEm::Core::Parser::LabelInstructionMap& labels, VeeEm::Core::Parser::LabelInstructionMap& sections)
 {
     using namespace std;
     using namespace VeeEm::Core;
@@ -78,7 +83,7 @@ bool LoadInstructions(std::ifstream& infile, std::vector<Instruction>& instructi
         getline(infile, raw_instruction);
 
         VeeEm::Core::Parser::Line line(raw_instruction, linenumber);
-        if (!parser.ParseLine(line, instructions, labels))
+        if (!parser.ParseLine(line, instructions, labels, sections))
         {
             successfulParse = false;
             continue;

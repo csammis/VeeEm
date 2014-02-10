@@ -29,7 +29,7 @@ public:
     Parser();
     ~Parser();
 
-    bool ParseLine(const Line& line, std::vector<Instruction>& instructions, LabelInstructionMap& labels);
+    bool ParseLine(const Line& line, std::vector<Instruction>& instructions, LabelInstructionMap& labels, LabelInstructionMap& sections);
 
 private:
     typedef std::map<std::string, std::pair<Opcode, int> > OpcodeParseMap;

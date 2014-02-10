@@ -80,6 +80,8 @@ Parser::Parser()
     m_opcodes["jgte"] = std::make_pair(Opcode::JUMP_GREATER_THAN_EQUAL_TO, 1);
     m_opcodes["push"] = std::make_pair(Opcode::PUSH, 1);
     m_opcodes["pop"] = std::make_pair(Opcode::POP, 1);
+    m_opcodes["call"] = std::make_pair(Opcode::CALL, 1);
+    m_opcodes["return"] = std::make_pair(Opcode::RETURN, 0);
     m_opcodes["syscall"] = std::make_pair(Opcode::SYSCALL, 1);
 }
 
@@ -87,10 +89,19 @@ Parser::~Parser()
 {
 }
 
-bool Parser::ParseLine(const Line& line, vector<Instruction>& instructions, LabelInstructionMap& labels)
+bool AddLabelToMap(const string& label, int lineNumber, int location, LabelInstructionMap& labelmap)
 {
-    Log::Instance(LogLevel::DEBUG) << "ParseLine got line " << line.m_content << End();
+    if (labelmap.find(label) != labelmap.end())
+    {
+        Log::Instance(LogLevel::ERROR) << "Found duplicate label \"" << label << "\" at " << lineNumber << End();
+        return false;
+    }
+    labelmap[label] = location;
+    return true;
+}
 
+bool Parser::ParseLine(const Line& line, vector<Instruction>& instructions, LabelInstructionMap& labels, LabelInstructionMap& sections)
+{
     Tokenizer parse(line);
     string token = parse.NextToken();
     if (token.empty())
@@ -103,15 +114,21 @@ bool Parser::ParseLine(const Line& line, vector<Instruction>& instructions, Labe
         return true;
     }
 
-    if (token.back() == ':')
+    if (token.front() == '.')
     {
-        string label = token.substr(0, token.size() - 1);
-        if (labels.find(label) != labels.end())
+        string label = token.substr(1, token.size() - 1);
+        if (!AddLabelToMap(label, parse.LineNumber(), instructions.size(), sections))
         {
-            Log::Instance(LogLevel::ERROR) << "Found duplicate label \"" << token << "\" at " << parse.LineNumber() << End();
             return false;
         }
-        labels[label] = instructions.size();
+    }
+    else if (token.back() == ':')
+    {
+        string label = token.substr(0, token.size() - 1);
+        if (!AddLabelToMap(label, parse.LineNumber(), instructions.size(), labels))
+        {
+            return false;
+        }
     }
     else
     {

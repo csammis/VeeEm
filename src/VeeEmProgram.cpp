@@ -19,6 +19,11 @@ void VeeEmProgram::SetLabels(const std::map<std::string, int>& labels)
     m_Labels = labels;
 }
 
+void VeeEmProgram::SetSections(const std::map<std::string, int>& sections)
+{
+    m_Sections = sections;
+}
+
 void VeeEmProgram::SetInstructions(const std::vector<Instruction>& instructions)
 {
     m_Instructions = instructions;
@@ -29,6 +34,14 @@ void VeeEmProgram::Execute() const
     using namespace VeeEm::Core::Logger;
 
     Context context;
+
+    // Set the programmer-defined entry point if there is one
+    auto entry = m_Sections.find("entry");
+    if (entry != m_Sections.end())
+    {
+        context.InstrPtr = entry->second;
+    }
+
     while (context.InstrPtr < m_Instructions.size())
     {
         Instruction current = m_Instructions[context.InstrPtr];
