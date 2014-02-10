@@ -97,6 +97,29 @@ load r1, $-3
 
     `value` may be a register or a constant. `dest` must be a register.
 
+*   **pop** - Pops a value from the stack into a register
+
+    Syntax: `pop dest`
+
+    Example:
+
+        load r1, $3
+        push r1
+        pop r2
+
+    `dest` must be a register.
+
+*   **push** - Push a value from a register onto the stack
+
+    Syntax: `push src`
+
+    Example:
+
+        load r1, $3
+        push r1
+
+    `src` must be a register.
+
 *   **sub** - Subtracts one value from another and sets the result in a register
 
     Syntax: `sub dest, src1, src2`
