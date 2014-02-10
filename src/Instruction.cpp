@@ -99,7 +99,7 @@ bool Instruction::Execute(Context& context)
             {
                 return false;
             }
-            context.Stack.push(*pReg);
+            context.Stack.push({ Context::StackSource::PUSH, *pReg });
         }
         break;
     case Opcode::POP:
@@ -109,7 +109,20 @@ bool Instruction::Execute(Context& context)
             {
                 return false;
             }
-            *pReg = context.Stack.top();
+
+            if (context.Stack.empty())
+            {
+                context.Error = ContextError::POP_UNBALANCED_WITH_PUSH;
+                return false;
+            }
+
+            Context::StackContext entry = context.Stack.top();
+            if (entry.source != Context::StackSource::PUSH)
+            {
+                context.Error = ContextError::POP_UNBALANCED_WITH_PUSH;
+                return false;
+            }
+            *pReg = entry.value;
             context.Stack.pop();
         }
         break;

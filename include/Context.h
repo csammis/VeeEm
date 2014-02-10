@@ -15,11 +15,23 @@ public:
     unsigned int InstrPtr;
     ContextError Error;
     unsigned char CompareFlags;
-    std::stack<unsigned int> Stack;
 
     unsigned int* ResolveLocationReference(const std::string& arg);
     bool ResolveValue(const std::string& arg, unsigned int& value);
     bool ResolveJumpOffset(const std::string& arg, unsigned int& offset);
+
+    enum class StackSource
+    {
+        PUSH
+    };
+
+    struct StackContext
+    {
+        StackSource source;
+        unsigned int value;
+    };
+
+    std::stack<StackContext> Stack;
 
 private:
     bool ValidateConstant(const std::string& arg, unsigned int& value);
