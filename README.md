@@ -56,6 +56,20 @@ load r1, $-3
 
     The `add` instruction computes `src1 + src2` and stores the result in `dest`. `src1` and `src2` may be registers or constants. `dest` must be a register.
 
+*   **call** - Set execution to a labeled subroutine
+
+    Syntax: `call dest`
+
+    Example:
+
+        call :Func
+        ...
+        Func:
+            ...
+            return
+
+    `dest` must be a label. Each `call` instruction executed should be paired with a corresponding `return` instruction. 
+
 *   **comp** - Compares two values and sets a flag in the current execution context
 
     Syntax: `comp val1, val2`
@@ -107,7 +121,9 @@ load r1, $-3
         push r1
         pop r2
 
-    `dest` must be a register. A call to `pop` without a corresponding call to `push` results in a runtime error.
+    `dest` must be a register.
+    
+    A `pop` instruction without a corresponding `push` instruction results in a runtime error.
 
 *   **push** - Push a value from a register onto the stack
 
@@ -119,6 +135,22 @@ load r1, $-3
         push r1
 
     `src` must be a register.
+
+*   **return** - Returns execution to an invoking `call` instruction
+
+    Syntax: `return`
+
+    Example:
+
+        call :Func
+        ...
+        Func:
+            ...
+            return
+
+    `return` sets the next instruction to be executed to the instruction immediately following the invoking `call` instruction.
+
+    A `return` instruction without a corresponding `call` instruction results in a runtime error.
 
 *   **sub** - Subtracts one value from another and sets the result in a register
 

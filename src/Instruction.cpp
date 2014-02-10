@@ -126,6 +126,35 @@ bool Instruction::Execute(Context& context)
             context.Stack.pop();
         }
         break;
+    case Opcode::CALL:
+        {
+            unsigned int offset = 0;
+            if (!context.ResolveJumpOffset(m_Parameters[0], offset))
+            {
+                return false;
+            }
+            context.Stack.push( {Context::StackSource::CALL, context.InstrPtr} );
+            context.InstrPtr += offset - 1;
+        }
+        break;
+    case Opcode::RETURN:
+        {
+            if (context.Stack.empty())
+            {
+                context.Error = ContextError::RETURN_UNBALANCED_WITH_CALL;
+                return false;
+            }
+
+            Context::StackContext entry = context.Stack.top();
+            if (entry.source != Context::StackSource::CALL)
+            {
+                context.Error = ContextError::RETURN_UNBALANCED_WITH_CALL;
+                return false;
+            }
+            context.InstrPtr = entry.value;
+            context.Stack.pop();
+        }
+        break;
     case Opcode::SYSCALL:
         {
             int arg = strtol(m_Parameters[0].c_str(), nullptr, 0);

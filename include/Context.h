@@ -22,7 +22,8 @@ public:
 
     enum class StackSource
     {
-        PUSH
+        PUSH,
+        CALL
     };
 
     struct StackContext
