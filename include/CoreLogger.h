@@ -23,6 +23,8 @@ public:
     static void Teardown();
 
     LogLevel Level() const { return m_Level; }
+    LogLevel Threshold() const { return m_Threshold; }
+    bool ShouldOutput() const { return m_Level <= m_Threshold; }
 
     bool IsStart() const { return m_IsStart; }
     void IsStart(bool val) { m_IsStart = val; }
@@ -43,27 +45,30 @@ template<typename T> Log& operator<<(Log& logger, const T& val)
 {
     using namespace std;
 
-    if (logger.IsStart())
+    if (logger.ShouldOutput())
     {
-        switch (logger.Level())
+        if (logger.IsStart())
         {
-        case LogLevel::ERROR:
-            cout << "!! ERROR: ";
-            break;
-        case LogLevel::WARNING:
-            cout << "~~ WARN:  ";
-            break;
-        case LogLevel::INFO:
-            cout << "## INFO:  ";
-            break;
-        case LogLevel::DEBUG:
-            cout << "** DEBUG: ";
-            break;
+            switch (logger.Level())
+            {
+            case LogLevel::ERROR:
+                cout << "!! ERROR: ";
+                break;
+            case LogLevel::WARNING:
+                cout << "~~ WARN:  ";
+                break;
+            case LogLevel::INFO:
+                cout << "## INFO:  ";
+                break;
+            case LogLevel::DEBUG:
+                cout << "** DEBUG: ";
+                break;
+            }
+            logger.IsStart(false);
         }
-        logger.IsStart(false);
-    }
 
-    cout << val;
+        cout << val;
+    }
 
     return logger;
 }

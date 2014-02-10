@@ -1,7 +1,5 @@
 #include "CoreLogger.h"
 
-#include <iostream>
-
 using namespace VeeEm::Core::Logger;
 
 Log* Log::s_Log;
@@ -35,7 +33,10 @@ Log::Log(enum LogLevel level)
 
 Log& End::operator()(Log& logger) const
 {
-    std::cout << std::endl;
+    if (logger.ShouldOutput())
+    {
+        std::cout << std::endl;
+    }
     logger.m_IsStart = true;
     return logger;
 }
