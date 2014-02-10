@@ -13,14 +13,33 @@ clang++ -std=c++11 -o VeeEm -Iinclude src/*.cpp
 ## Syntax
 The VM language is being created more or less off the top of my head and is loosely based on what I recall from RISC architecture, particularly the Texas Instruments MSP430.
 
+### Sections
+Sections are markers in a source file which are used to reference specific parts of a VeeEm program. Each section in a source file is a period `.` followed by a distinct name describing the section.
+
+The supported types of sections are defined below. If an unknown section marker is encountered in a source file it is discarded.
+
+#### .entry
+The `.entry` section tells the machine to begin execution at the [instruction](#instructions) immediately following the section label. If the `.entry` section is omitted then execution begins with the first instruction in the source file.
+
+    Example:
+        
+        MyFunction:
+            load r1, $0x03
+            return
+
+        .entry
+        call :MyFunction
+
 ### Labels
-Labels are markers in a source file which are used to reference specific instructions. Each label in a source file is a unique alphanumeric name followed by a colon.
+Labels are markers in a source file which are used to reference specific [instructions](#instructions). Each label in a source file is a unique alphanumeric name followed by a colon.
 
 ```
 LoopHere:
 ```
 
-A label can be used as [a parameter of a jump instruction](#conditional-jumps).
+A label's name cannot start with a period `.` - this is reserved for [sections](#sections).
+
+A label can be used as [a parameter of a jump instruction](#conditional-jumps) or to define a function using `call`.
 
 ### Instructions
 An instruction is one instruction name followed by a space and a sequence of zero or more parameters separated by commas. The parameter list length is dependent on the instruction. Program parsing fails if an instruction is specified with too few or too many parameters.
