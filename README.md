@@ -107,7 +107,7 @@ load r1, $-3
         push r1
         pop r2
 
-    `dest` must be a register.
+    `dest` must be a register. A call to `pop` without a corresponding call to `push` results in a runtime error.
 
 *   **push** - Push a value from a register onto the stack
 
