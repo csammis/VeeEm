@@ -92,6 +92,27 @@ bool Instruction::Execute(Context& context)
             return false;
         }
         break;
+    case Opcode::PUSH:
+        {
+            unsigned int* pReg = context.ResolveLocationReference(m_Parameters[0]);
+            if (pReg == nullptr)
+            {
+                return false;
+            }
+            context.Stack.push(*pReg);
+        }
+        break;
+    case Opcode::POP:
+        {
+            unsigned int* pReg = context.ResolveLocationReference(m_Parameters[0]);
+            if (pReg == nullptr)
+            {
+                return false;
+            }
+            *pReg = context.Stack.top();
+            context.Stack.pop();
+        }
+        break;
     case Opcode::SYSCALL:
         {
             int arg = strtol(m_Parameters[0].c_str(), nullptr, 0);

@@ -78,6 +78,8 @@ Parser::Parser()
     m_opcodes["jlte"] = std::make_pair(Opcode::JUMP_LESS_THAN_EQUAL_TO, 1);
     m_opcodes["jgt"] = std::make_pair(Opcode::JUMP_GREATER_THAN, 1);
     m_opcodes["jgte"] = std::make_pair(Opcode::JUMP_GREATER_THAN_EQUAL_TO, 1);
+    m_opcodes["push"] = std::make_pair(Opcode::PUSH, 1);
+    m_opcodes["pop"] = std::make_pair(Opcode::POP, 1);
     m_opcodes["syscall"] = std::make_pair(Opcode::SYSCALL, 1);
 }
 

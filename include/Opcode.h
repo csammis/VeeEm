@@ -9,12 +9,16 @@ enum class Opcode
     ADD,
     SUBTRACT,
     COMPARE,
+    // Don't add instructions between the jumps! (see OPCODE_REBASE_MIN/MAX)
     JUMP_EQUAL,
     JUMP_NOT_EQUAL,
     JUMP_LESS_THAN,
     JUMP_LESS_THAN_EQUAL_TO,
     JUMP_GREATER_THAN,
     JUMP_GREATER_THAN_EQUAL_TO,
+    // Don't add instructions between the jumps!
+    PUSH,
+    POP,
     SYSCALL
 };
 

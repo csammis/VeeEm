@@ -2,6 +2,7 @@
 #define __CONTEXT_H__
 
 #include <string>
+#include <stack>
 #include "RegisterFlags.h"
 
 class Context
@@ -14,6 +15,7 @@ public:
     unsigned int InstrPtr;
     ContextError Error;
     unsigned char CompareFlags;
+    std::stack<unsigned int> Stack;
 
     unsigned int* ResolveLocationReference(const std::string& arg);
     bool ResolveValue(const std::string& arg, unsigned int& value);
