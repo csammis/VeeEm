@@ -28,10 +28,11 @@ public:
                 cout << endl;
             }
         }
-        cout << "FLAGS                          STACK" << endl;
+        cout << "FLAGS                          STACK           CALLSTACK" << endl;
         cout << "Err: 0x" << setw(8) << setbase(16) << static_cast<unsigned int>(context.Error);
         cout << " Cmp: 0x" << setw(2) << static_cast<unsigned int>(context.CompareFlags);
-        cout << "      Size: 0x" << setw(8) << setbase(16) << static_cast<unsigned int>(context.Stack.size());
+        cout << "      Size: 0x" << setw(4) << setbase(16) << static_cast<unsigned int>(context.Stack.size());
+        cout << "    Size: 0x" << setw(4) << setbase(16) << static_cast<unsigned int>(context.CallStack.size());
         cout << endl;
     }
 };
