@@ -21,14 +21,14 @@ The supported types of sections are defined below. If an unknown section marker 
 #### .entry
 The `.entry` section tells the machine to begin execution at the [instruction](#instructions) immediately following the section label. If the `.entry` section is omitted then execution begins with the first instruction in the source file.
 
-    Example:
-        
-        MyFunction:
-            load r1, $0x03
-            return
+Example:
+    
+    MyFunction:
+        load r1, $0x03
+        return
 
-        .entry
-        call :MyFunction
+    .entry
+    call :MyFunction
 
 ### Labels
 Labels are markers in a source file which are used to reference specific [instructions](#instructions). Each label in a source file is a unique alphanumeric name followed by a colon.
