@@ -2,23 +2,22 @@
 #include "Instruction.h"
 #include "CoreLogger.h"
 #include "Opcode.h"
+#include <fstream>
 
 using namespace std;
 using namespace VeeEm::Core::Parser;
 using namespace VeeEm::Core::Logger;
 
-string Trim(const string& input)
-{
-    string::size_type start = input.find_first_not_of(" \t\n");
-    string::size_type end = input.find_last_not_of(" \t\n");
-    if (start == string::npos)
-    {
-        return "";
-    }
-    return input.substr(start, end - start + 1);
-}
-
 namespace VeeEm { namespace Core { namespace Parser {
+
+struct Line
+{
+    string m_content;
+    int m_lineNumber;
+
+    explicit Line(const string& content, int lineNumber)
+        : m_content(content), m_lineNumber(lineNumber) { }
+};
 
 class Tokenizer
 {
@@ -57,12 +56,24 @@ private:
     Line m_Line;
     string::size_type m_Position;
     string m_Delimiters;
+
+    static string Trim(const string& input)
+    {
+        string::size_type start = input.find_first_not_of(" \t\n");
+        string::size_type end = input.find_last_not_of(" \t\n");
+        if (start == string::npos)
+        {
+            return "";
+        }
+        return input.substr(start, end - start + 1);
+    }
 };
 
 } } } // namespace VeeEm::Core::Parser
 
 
-Parser::Parser()
+Parser::Parser(const std::string& filename)
+    : m_filename(filename)
 {
     m_opcodes["load"] = std::make_pair(Opcode::LOAD, 2);
     m_opcodes["incr"] = std::make_pair(Opcode::INCREMENT, 1);
@@ -87,6 +98,56 @@ Parser::~Parser()
 {
 }
 
+const std::vector<Instruction>& Parser::Instructions() const
+{
+    return m_instructions;
+}
+
+const LabelInstructionMap& Parser::Labels() const
+{
+    return m_labels;
+}
+
+const LabelInstructionMap& Parser::Sections() const
+{
+    return m_sections;
+}
+
+bool Parser::Parse()
+{
+    ifstream fromFile;
+    fromFile.open(m_filename.c_str());
+    if (!fromFile.good())
+    {
+        Log::Instance(LogLevel::ERROR) << "Unable to load " << m_filename << End();
+        return false;
+    }
+
+    bool successfulParse = true;
+    try
+    {
+        for (int linenumber = 1; fromFile.good(); linenumber++)
+        {
+            string raw_instruction;
+            getline(fromFile, raw_instruction);
+
+            if (!ParseLine(raw_instruction, linenumber))
+            {
+                successfulParse = false;
+                continue;
+            }
+        }
+    }
+    catch (...)
+    {
+        Log::Instance(LogLevel::ERROR) << "Caught exception loading from " << m_filename << End();
+        successfulParse = false;
+    }
+
+    fromFile.close();
+    return successfulParse;
+}
+
 bool AddLabelToMap(const string& label, int lineNumber, int location, LabelInstructionMap& labelmap)
 {
     if (labelmap.find(label) != labelmap.end())
@@ -98,9 +159,9 @@ bool AddLabelToMap(const string& label, int lineNumber, int location, LabelInstr
     return true;
 }
 
-bool Parser::ParseLine(const Line& line, vector<Instruction>& instructions, LabelInstructionMap& labels, LabelInstructionMap& sections)
+bool Parser::ParseLine(const string& line, int lineNumber)
 {
-    Tokenizer parse(line);
+    Tokenizer parse(Line(line, lineNumber));
     string token = parse.NextToken();
     if (token.empty())
     {
@@ -115,7 +176,7 @@ bool Parser::ParseLine(const Line& line, vector<Instruction>& instructions, Labe
     if (token.front() == '.')
     {
         string label = token.substr(1, token.size() - 1);
-        if (!AddLabelToMap(label, parse.LineNumber(), instructions.size(), sections))
+        if (!AddLabelToMap(label, parse.LineNumber(), m_instructions.size(), m_sections))
         {
             return false;
         }
@@ -123,7 +184,7 @@ bool Parser::ParseLine(const Line& line, vector<Instruction>& instructions, Labe
     else if (token.back() == ':')
     {
         string label = token.substr(0, token.size() - 1);
-        if (!AddLabelToMap(label, parse.LineNumber(), instructions.size(), labels))
+        if (!AddLabelToMap(label, parse.LineNumber(), m_instructions.size(), m_labels))
         {
             return false;
         }
@@ -131,7 +192,7 @@ bool Parser::ParseLine(const Line& line, vector<Instruction>& instructions, Labe
     else
     {
         Tokenizer parameters = parse.Remainder(",");
-        if (!ParseInstruction(token, parse.LineNumber(), parameters, instructions))
+        if (!ParseInstruction(token, parse.LineNumber(), parameters))
         {
             return false;
         }
@@ -140,7 +201,7 @@ bool Parser::ParseLine(const Line& line, vector<Instruction>& instructions, Labe
     return true;
 }
 
-bool Parser::ParseInstruction(const string& operation, int lineNumber, Tokenizer& parameters, vector<Instruction>& instructions)
+bool Parser::ParseInstruction(const string& operation, int lineNumber, Tokenizer& parameters)
 {
     auto lookup = m_opcodes.find(operation);
     if (lookup == m_opcodes.end())
@@ -162,7 +223,7 @@ bool Parser::ParseInstruction(const string& operation, int lineNumber, Tokenizer
         }
         inst.SetParameter(i, parameter);
     }
-    instructions.push_back(inst);
+    m_instructions.push_back(inst);
 
     return true;
 }

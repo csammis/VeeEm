@@ -33,6 +33,8 @@ void VeeEmProgram::Execute() const
 {
     using namespace VeeEm::Core::Logger;
 
+    Log::Instance(LogLevel::DEBUG) << "Beginning execution." << End();
+
     Context context;
 
     // Set the programmer-defined entry point if there is one
@@ -55,6 +57,8 @@ void VeeEmProgram::Execute() const
             break;
         }
     }
+
+    Log::Instance(LogLevel::DEBUG) << "Halting." << End();
 }
 
 bool VeeEmProgram::Rebase(Instruction& instruction, Context& context) const

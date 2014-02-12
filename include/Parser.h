@@ -10,15 +10,6 @@ enum class Opcode;
 
 namespace VeeEm { namespace Core { namespace Parser {
 
-struct Line
-{
-    std::string m_content;
-    int m_lineNumber;
-
-    explicit Line(const std::string& content, int lineNumber)
-        : m_content(content), m_lineNumber(lineNumber) { }
-};
-
 typedef std::map<std::string, int> LabelInstructionMap;
 
 class Tokenizer;
@@ -26,16 +17,26 @@ class Tokenizer;
 class Parser
 {
 public:
-    Parser();
+    explicit Parser(const std::string& filename);
     ~Parser();
 
-    bool ParseLine(const Line& line, std::vector<Instruction>& instructions, LabelInstructionMap& labels, LabelInstructionMap& sections);
+    bool Parse();
+
+    const std::vector<Instruction>& Instructions() const;
+    const LabelInstructionMap& Labels() const;
+    const LabelInstructionMap& Sections() const;
 
 private:
     typedef std::map<std::string, std::pair<Opcode, int> > OpcodeParseMap;
     OpcodeParseMap m_opcodes;
 
-    bool ParseInstruction(const std::string& operation, int lineNumber, Tokenizer& parameters, std::vector<Instruction>& instructions);
+    std::string m_filename;
+    std::vector<Instruction> m_instructions;
+    LabelInstructionMap m_labels;
+    LabelInstructionMap m_sections;
+
+    bool ParseLine(const std::string& line, int lineNumber);
+    bool ParseInstruction(const std::string& operation, int lineNumber, Tokenizer& parameters);
 };
 
 } } } // namespace VeeEm::Core::Parser

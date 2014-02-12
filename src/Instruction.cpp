@@ -27,8 +27,6 @@ void Instruction::SetParameter(int index, const std::string& parameter)
 
 bool Instruction::Execute(Context& context)
 {
-    using namespace std;
-
     switch (Opcode())
     {
     case Opcode::LOAD:
@@ -163,7 +161,7 @@ bool Instruction::Execute(Context& context)
                 context.Error = ContextError::SYSCALL_OUT_OF_RANGE;
                 return false;
             }
-            unique_ptr<SystemCall> call = SystemCall::Create(static_cast<Syscall>(arg));
+            std::unique_ptr<SystemCall> call = SystemCall::Create(static_cast<Syscall>(arg));
             call->Execute(context);
         }
         break;
