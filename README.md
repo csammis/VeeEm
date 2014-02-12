@@ -241,3 +241,8 @@ Executing a conditional jump instruction without first executing a `comp` instru
 
     Prints a formatted list of the current execution context's registers and flags to the console. This system call is automatically invoked when a runtime error occurs before the system halts.
 
+*   **PUTCHAR**
+
+    Call index: 1
+
+    Pops a value off the stack, interprets the value as a character, and prints it to standard output.
