@@ -20,19 +20,8 @@ public:
     bool ResolveValue(const std::string& arg, unsigned int& value);
     bool ResolveJumpOffset(const std::string& arg, unsigned int& offset);
 
-    enum class StackSource
-    {
-        PUSH,
-        CALL
-    };
-
-    struct StackContext
-    {
-        StackSource source;
-        unsigned int value;
-    };
-
-    std::stack<StackContext> Stack;
+    std::stack<unsigned int> Stack;
+    std::stack<unsigned int> CallStack;
 
 private:
     bool ValidateConstant(const std::string& arg, unsigned int& value);

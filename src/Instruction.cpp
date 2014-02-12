@@ -97,7 +97,7 @@ bool Instruction::Execute(Context& context)
             {
                 return false;
             }
-            context.Stack.push({ Context::StackSource::PUSH, *pReg });
+            context.Stack.push(*pReg);
         }
         break;
     case Opcode::POP:
@@ -114,13 +114,7 @@ bool Instruction::Execute(Context& context)
                 return false;
             }
 
-            Context::StackContext entry = context.Stack.top();
-            if (entry.source != Context::StackSource::PUSH)
-            {
-                context.Error = ContextError::POP_UNBALANCED_WITH_PUSH;
-                return false;
-            }
-            *pReg = entry.value;
+            *pReg = context.Stack.top();
             context.Stack.pop();
         }
         break;
@@ -131,26 +125,20 @@ bool Instruction::Execute(Context& context)
             {
                 return false;
             }
-            context.Stack.push( {Context::StackSource::CALL, context.InstrPtr} );
+            context.CallStack.push(context.InstrPtr);
             context.InstrPtr += offset - 1;
         }
         break;
     case Opcode::RETURN:
         {
-            if (context.Stack.empty())
+            if (context.CallStack.empty())
             {
                 context.Error = ContextError::RETURN_UNBALANCED_WITH_CALL;
                 return false;
             }
 
-            Context::StackContext entry = context.Stack.top();
-            if (entry.source != Context::StackSource::CALL)
-            {
-                context.Error = ContextError::RETURN_UNBALANCED_WITH_CALL;
-                return false;
-            }
-            context.InstrPtr = entry.value;
-            context.Stack.pop();
+            context.InstrPtr = context.CallStack.top();
+            context.CallStack.pop();
         }
         break;
     case Opcode::SYSCALL:
