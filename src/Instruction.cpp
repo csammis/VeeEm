@@ -92,12 +92,12 @@ bool Instruction::Execute(Context& context)
         break;
     case Opcode::PUSH:
         {
-            unsigned int* pReg = context.ResolveLocationReference(m_Parameters[0]);
-            if (pReg == nullptr)
+            unsigned int value = 0;
+            if (!context.ResolveValue(m_Parameters[0], value))
             {
                 return false;
             }
-            context.Stack.push(*pReg);
+            context.Stack.push(value);
         }
         break;
     case Opcode::POP:

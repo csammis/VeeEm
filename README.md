@@ -144,7 +144,7 @@ load r1, $-3
     
     A `pop` instruction without a corresponding `push` instruction results in a runtime error.
 
-*   **push** - Push a value from a register onto the stack
+*   **push** - Push a constant value or a value from a register onto the stack
 
     Syntax: `push src`
 
@@ -152,8 +152,9 @@ load r1, $-3
 
         load r1, $3
         push r1
+        push $5
 
-    `src` must be a register.
+    `src` may be a register or a constant.
 
 *   **return** - Returns execution to an invoking `call` instruction
 
